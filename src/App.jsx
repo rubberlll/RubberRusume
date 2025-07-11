@@ -25,7 +25,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Space, Select } from "antd";
 import "antd/dist/reset.css";
-import React from "react";
+import React, { useRef, useState } from "react";
 import Split from "react-split";
 import "./split.css";
 
@@ -105,6 +105,34 @@ function ResumePreview({ html, iconTheme }) {
 
 function App() {
   const [iconTheme, setIconTheme] = React.useState("antd");
+  const [leftWidth, setLeftWidth] = useState(480); // 初始宽度
+  const dragging = useRef(false);
+
+  // 拖拽事件
+  const onMouseDown = () => {
+    dragging.current = true;
+    document.body.style.cursor = "col-resize";
+  };
+  React.useEffect(() => {
+    const onMouseMove = (e) => {
+      if (!dragging.current) return;
+      const min = 480;
+      let newWidth = e.clientX;
+      if (newWidth < min) newWidth = min;
+      setLeftWidth(newWidth);
+    };
+    const onMouseUp = () => {
+      dragging.current = false;
+      document.body.style.cursor = "";
+    };
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -138,23 +166,17 @@ function App() {
   });
 
   return (
-    <Split
-      className="split-pane"
-      sizes={[35, 65]}
-      minSize={[280, 400]}
-      gutterSize={8}
-      snapOffset={0}
-      direction="horizontal"
-      style={{ height: "100vh", background: "#f7f8fa" }}
-    >
-      {/* 左侧编辑器 */}
+    <div style={{ display: "flex", height: "100vh", background: "#f7f8fa" }}>
+      {/* 左侧编辑器（可拖拽宽度） */}
       <div
         style={{
-          height: "100%",
+          width: leftWidth,
+          minWidth: 0,
           padding: 24,
           overflow: "auto",
-          borderRight: "1px solid #eee",
           background: "#fff",
+          borderRight: "1px solid #eee",
+          transition: dragging.current ? "none" : "width 0.2s",
         }}
       >
         {/* 顶部按钮区 */}
@@ -204,31 +226,49 @@ function App() {
           }}
         />
       </div>
-      {/* 右侧预览区 */}
+      {/* 分割条 */}
       <div
         style={{
-          height: "100%",
-          padding: 40,
+          width: 8,
+          cursor: "col-resize",
+          background: dragging.current ? "#e0e0e0" : "#f3f4f6",
+          zIndex: 10,
+          transition: "background 0.2s",
+        }}
+        onMouseDown={onMouseDown}
+      />
+      {/* 右侧预览区（固定宽度，居中灰色背景） */}
+      <div
+        style={{
+          width: 900,
+          minWidth: 900,
+          maxWidth: 900,
+          height: "100vh",
+          background: "#f3f4f6",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           overflow: "auto",
-          background: "#f7f8fa",
         }}
       >
-        <h2 style={{ marginTop: 0 }}>简历预览</h2>
         <div
           style={{
             background: "#fff",
-            borderRadius: 8,
+            borderRadius: 16,
             minHeight: 600,
-            padding: 32,
-            maxWidth: 800,
+            padding: 40,
+            width: 800,
+            boxShadow: "0 2px 24px #0001",
             margin: "0 auto",
-            boxShadow: "0 2px 16px #0002",
+            maxHeight: "90vh",
+            overflow: "auto",
           }}
         >
+          <h2 style={{ marginTop: 0, textAlign: "center" }}>简历预览</h2>
           <ResumePreview html={editor?.getHTML() || ""} iconTheme={iconTheme} />
         </div>
       </div>
-    </Split>
+    </div>
   );
 }
 

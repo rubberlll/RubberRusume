@@ -19,18 +19,18 @@
 /* 左侧编辑器滚动条美化 */
 .split-pane > div:first-child {
   scrollbar-width: thin;
-  scrollbar-color: #e0e0e0 #fff;
+  scrollbar-color: #f0f0f0 #fff;
 }
 .split-pane > div:first-child::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
   background: #fff;
 }
 .split-pane > div:first-child::-webkit-scrollbar-thumb {
-  background: #e0e0e0;
+  background: #f0f0f0;
   border-radius: 4px;
 }
 .split-pane > div:first-child::-webkit-scrollbar-thumb:hover {
-  background: #d0d0d0;
+  background: #e0e0e0;
 }
 
 /* 右侧预览区滚动条隐藏 */
