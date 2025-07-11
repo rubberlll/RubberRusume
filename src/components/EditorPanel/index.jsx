@@ -157,11 +157,14 @@ export default function EditorPanel({
     return () => {
       dom.removeEventListener("mousemove", handler);
     };
-  }, [editMode, editor, menuOpen, setMenuState]);
+  }, [editMode, editor, menuOpen, setMenuState, menuState.nodeEl]);
 
   // 菜单操作
   const handleAddRow = () => {
-    if (!editor || menuState.blockPos == null) return;
+    if (!editor || menuState.blockPos == null || menuState.blockPos < 0) {
+      message.error("无法定位当前块，操作失败");
+      return;
+    }
     editor
       .chain()
       .focus()
@@ -171,7 +174,10 @@ export default function EditorPanel({
     setMenuState((m) => ({ ...m, show: false }));
   };
   const handleDelete = () => {
-    if (!editor || menuState.blockPos == null) return;
+    if (!editor || menuState.blockPos == null || menuState.blockPos < 0) {
+      message.error("无法定位当前块，操作失败");
+      return;
+    }
     editor
       .chain()
       .focus()
@@ -181,7 +187,10 @@ export default function EditorPanel({
     setMenuState((m) => ({ ...m, show: false }));
   };
   const handleLayout = (cols) => {
-    if (!editor || menuState.blockPos == null) return;
+    if (!editor || menuState.blockPos == null || menuState.blockPos < 0) {
+      message.error("无法定位当前块，操作失败");
+      return;
+    }
     let html =
       cols === 2
         ? '<div style="display:flex;gap:16px"><div style="flex:1">左列</div><div style="flex:1">右列</div></div>'
@@ -191,7 +200,14 @@ export default function EditorPanel({
     setMenuState((m) => ({ ...m, show: false }));
   };
   const handleCopy = () => {
-    if (!menuState.nodeEl) return;
+    if (
+      !menuState.nodeEl ||
+      menuState.blockPos == null ||
+      menuState.blockPos < 0
+    ) {
+      message.error("无法定位当前块，操作失败");
+      return;
+    }
     const text = menuState.nodeEl.innerText;
     navigator.clipboard.writeText(text);
     setMenuOpen(false);

@@ -24,21 +24,6 @@ export default function BlockMenu({
   const [open, setOpen] = React.useState(false);
   const menuRef = React.useRef();
 
-  // 点击外部关闭菜单
-  React.useEffect(() => {
-    const isOpen = menuOpen !== undefined ? menuOpen : open;
-    if (!isOpen) return;
-    const handleClick = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        if (setMenuOpen) setMenuOpen(false);
-        else setOpen(false);
-        onClose && onClose();
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open, menuOpen, setMenuOpen, onClose]);
-
   const menuItems = [
     { key: "copy", icon: <CopyOutlined />, label: "复制", onClick: onCopy },
     { type: "divider" },
@@ -73,6 +58,51 @@ export default function BlockMenu({
   const isOpen = menuOpen !== undefined ? menuOpen : open;
   const handleSetOpen = setMenuOpen ? setMenuOpen : setOpen;
 
+  // 菜单内容自定义，hover到菜单内容也保持打开
+  const menuOverlay = (
+    <div
+      onMouseEnter={() => handleSetOpen(true)}
+      onMouseLeave={() => handleSetOpen(false)}
+      style={{
+        minWidth: 160,
+        background: "#fff",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+        borderRadius: 8,
+        padding: "4px 0",
+        // marginTop: 8, // 移除
+      }}
+    >
+      {menuItems.map((item, idx) =>
+        item.type === "divider" ? (
+          <div
+            key={"div-" + idx}
+            style={{ borderTop: "1px solid #eee", margin: "4px 0" }}
+          />
+        ) : (
+          <div
+            key={item.key}
+            className="block-menu-item"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "6px 16px",
+              cursor: "pointer",
+              color: item.danger ? "#ff4d4f" : undefined,
+            }}
+            onClick={() => {
+              if (item.onClick) item.onClick();
+              handleSetOpen(false);
+              onClose && onClose();
+            }}
+          >
+            {item.icon}
+            <span style={{ marginLeft: 8 }}>{item.label}</span>
+          </div>
+        )
+      )}
+    </div>
+  );
+
   return (
     <div
       className="block-menu-root"
@@ -80,21 +110,11 @@ export default function BlockMenu({
       ref={menuRef}
     >
       <Dropdown
-        menu={{
-          items: menuItems,
-          onClick: ({ key }) => {
-            const item = menuItems.find((i) => i.key === key);
-            if (item && item.onClick) item.onClick();
-            handleSetOpen(false);
-            onClose && onClose();
-          },
-        }}
-        trigger={["hover"]}
         open={isOpen}
         onOpenChange={handleSetOpen}
         placement="right"
         overlayStyle={{ marginLeft: 0, marginTop: 0 }}
-        arrow
+        popupRender={() => menuOverlay}
       >
         <Button
           shape="circle"

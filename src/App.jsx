@@ -38,7 +38,7 @@ import "./split.css";
 import IconPickerModal from "./IconPickerModal";
 import TurndownService from "turndown";
 import { marked } from "marked";
-import BlockMenu from "./components/BlockMenu";
+
 import EditorPanel from "./components/EditorPanel";
 
 function ResumePreview({ html, iconTheme }) {
