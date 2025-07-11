@@ -178,11 +178,27 @@ export default function EditorPanel({
       message.error("无法定位当前块，操作失败");
       return;
     }
-    editor
+    // 优先用 NodeSelection 精确删除块
+    const chain = editor
       .chain()
       .focus()
-      .deleteRange({ from: menuState.blockPos, to: menuState.blockPos + 1 })
-      .run();
+      .setNodeSelection(menuState.blockPos)
+      .deleteSelection();
+    // fallback: 如果没删掉，再用原有 nodeEl 方式
+    if (!chain.run()) {
+      if (!menuState.nodeEl) {
+        message.error("无法定位当前块，操作失败");
+        return;
+      }
+      const from = editor.view.posAtDOM(menuState.nodeEl, 0);
+      if (from === -1) {
+        message.error("无法定位当前块，操作失败");
+        return;
+      }
+      const node = editor.state.doc.nodeAt(from);
+      const to = from + (node ? node.nodeSize : 1);
+      editor.chain().focus().deleteRange({ from, to }).run();
+    }
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };
@@ -210,6 +226,35 @@ export default function EditorPanel({
     }
     const text = menuState.nodeEl.innerText;
     navigator.clipboard.writeText(text);
+    setMenuOpen(false);
+    setMenuState((m) => ({ ...m, show: false }));
+  };
+
+  // 切换块类型
+  const handleChangeBlockType = (type) => {
+    if (!editor || !menuState.nodeEl) return;
+    const pos = editor.view.posAtDOM(menuState.nodeEl, 0);
+    if (pos < 0) return;
+    if (type === "正文") {
+      editor
+        .chain()
+        .focus()
+        .command(({ tr }) => {
+          tr.setNodeMarkup(pos, editor.schema.nodes.paragraph);
+          return true;
+        })
+        .run();
+    } else if (/^H[1-5]$/.test(type)) {
+      const level = Number(type.slice(1));
+      editor
+        .chain()
+        .focus()
+        .command(({ tr, state }) => {
+          tr.setNodeMarkup(pos, editor.schema.nodes.heading, { level });
+          return true;
+        })
+        .run();
+    }
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };
@@ -374,13 +419,21 @@ export default function EditorPanel({
                 background: "transparent",
               }}
               onMouseEnter={() => {
-                setMenuState((m) => ({ ...m, show: true }));
+                setMenuState((m) => ({
+                  ...m,
+                  show: true,
+                  nodeEl: menuState.nodeEl,
+                }));
                 if (menuState.nodeEl && menuState.nodeEl.classList) {
                   menuState.nodeEl.classList.add("editor-panel-block-active");
                 }
               }}
               onMouseMove={() => {
-                setMenuState((m) => ({ ...m, show: true }));
+                setMenuState((m) => ({
+                  ...m,
+                  show: true,
+                  nodeEl: menuState.nodeEl,
+                }));
                 if (menuState.nodeEl && menuState.nodeEl.classList) {
                   menuState.nodeEl.classList.add("editor-panel-block-active");
                 }
@@ -394,7 +447,11 @@ export default function EditorPanel({
               }}
               onClick={() => {
                 setMenuOpen(true);
-                setMenuState((m) => ({ ...m, show: true }));
+                setMenuState((m) => ({
+                  ...m,
+                  show: true,
+                  nodeEl: menuState.nodeEl,
+                }));
               }}
             />
           )}
@@ -412,6 +469,18 @@ export default function EditorPanel({
               }}
               menuOpen={menuOpen}
               setMenuOpen={setMenuOpen}
+              blockType={(() => {
+                if (!menuState.nodeEl) return "正文";
+                const tag = menuState.nodeEl.tagName;
+                if (tag === "H1") return "H1";
+                if (tag === "H2") return "H2";
+                if (tag === "H3") return "H3";
+                if (tag === "H4") return "H4";
+                if (tag === "H5") return "H5";
+                if (tag === "H6") return "H6";
+                return "正文";
+              })()}
+              onChangeBlockType={handleChangeBlockType}
             />
           )}
         </div>

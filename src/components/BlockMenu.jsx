@@ -20,6 +20,8 @@ export default function BlockMenu({
   onClose,
   menuOpen,
   setMenuOpen,
+  blockType = "H2", // 新增：当前块类型，默认H2
+  onChangeBlockType, // 新增
 }) {
   const [open, setOpen] = React.useState(false);
   const menuRef = React.useRef();
@@ -64,14 +66,40 @@ export default function BlockMenu({
       onMouseEnter={() => handleSetOpen(true)}
       onMouseLeave={() => handleSetOpen(false)}
       style={{
-        minWidth: 160,
+        minWidth: 200,
         background: "#fff",
         boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
         borderRadius: 8,
         padding: "4px 0",
-        // marginTop: 8, // 移除
       }}
     >
+      {/* 标题类型选择上方的间距 */}
+      <div style={{ height: 8 }} />
+      {/* 标题类型选择 */}
+      <div style={{ display: "flex", gap: 8, padding: "0 16px 8px 16px" }}>
+        {["正文", "H1", "H2", "H3", "H4", "H5"].map((t) => (
+          <span
+            key={t}
+            style={{
+              color: t === blockType ? "#52c41a" : "#222",
+              fontWeight: t === blockType ? 700 : 400,
+              fontSize: 15,
+              cursor: "pointer",
+              padding: "2px 4px",
+              borderRadius: 3,
+              background: t === blockType ? "#f6ffed" : "none",
+            }}
+            onClick={() => {
+              if (onChangeBlockType) onChangeBlockType(t);
+            }}
+          >
+            {t}
+          </span>
+        ))}
+      </div>
+      {/* 分割线 */}
+      <div style={{ borderTop: "1px solid #eee", margin: "4px 0" }} />
+      {/* 菜单项 */}
       {menuItems.map((item, idx) =>
         item.type === "divider" ? (
           <div
@@ -112,17 +140,36 @@ export default function BlockMenu({
       <Dropdown
         open={isOpen}
         onOpenChange={handleSetOpen}
-        placement="right"
+        placement="bottom" // 改为下方弹出
         overlayStyle={{ marginLeft: 0, marginTop: 0 }}
         popupRender={() => menuOverlay}
       >
-        <Button
-          shape="circle"
-          icon={<BarsOutlined style={{ fontSize: 20 }} />}
+        <div
           className={`block-menu-btn${isOpen ? " block-menu-btn-open" : ""}`}
+          style={{
+            width: 38,
+            height: 38,
+            background: "#fff",
+            border: isOpen ? "2px solid #52c41a" : "1px solid #d9d9d9",
+            borderRadius: 8,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: isOpen
+              ? "0 2px 8px rgba(82,196,26,0.12)"
+              : "0 1px 4px rgba(0,0,0,0.08)",
+            cursor: "pointer",
+            transition: "all 0.2s",
+            fontWeight: 700,
+            fontSize: 16,
+            color: "#222",
+            userSelect: "none",
+          }}
           onMouseEnter={() => handleSetOpen(true)}
           onMouseLeave={() => handleSetOpen(false)}
-        />
+        >
+          {blockType}
+        </div>
       </Dropdown>
     </div>
   );
