@@ -76,7 +76,7 @@ export default function BlockMenu({
   return (
     <div
       className="block-menu-root"
-      style={{ position: "absolute", top, left, zIndex: 1000 }}
+      style={{ position: "absolute", top: top - 8, left, zIndex: 1000 }}
       ref={menuRef}
     >
       <Dropdown
@@ -89,20 +89,19 @@ export default function BlockMenu({
             onClose && onClose();
           },
         }}
-        trigger={["click"]}
+        trigger={["hover"]}
         open={isOpen}
         onOpenChange={handleSetOpen}
-        placement="rightTop"
+        placement="right"
+        overlayStyle={{ marginLeft: 0, marginTop: 0 }}
         arrow
       >
         <Button
           shape="circle"
           icon={<BarsOutlined style={{ fontSize: 20 }} />}
           className={`block-menu-btn${isOpen ? " block-menu-btn-open" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleSetOpen((v) => !v);
-          }}
+          onMouseEnter={() => handleSetOpen(true)}
+          onMouseLeave={() => handleSetOpen(false)}
         />
       </Dropdown>
     </div>
