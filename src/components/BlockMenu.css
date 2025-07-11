@@ -1,0 +1,20 @@
+.block-menu-root {
+  /* 绝对定位由 style 控制 */
+}
+
+.block-menu-btn {
+  width: 36px;
+  height: 36px;
+  background: #f3f4f6;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+}
+
+.block-menu-btn-open {
+  box-shadow: 0 2px 8px #0002;
+}

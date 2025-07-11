@@ -1,0 +1,51 @@
+/* EditorPanel整体布局 */
+.editor-panel-root {
+  min-width: 0;
+  padding: 24px 24px 24px 44px;
+  overflow: auto;
+  background: #fff;
+  border-right: 1px solid #eee;
+  position: relative;
+}
+
+.editor-panel-toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  justify-content: space-between;
+}
+
+.editor-panel-toolbar-btn {
+  font-size: 18px;
+}
+
+.editor-panel-title {
+  margin-top: 0;
+}
+
+.editor-panel-content-rel {
+  position: relative;
+}
+
+.editor-panel-content {
+  background: #fff;
+  border-radius: 8px;
+  min-height: 600px;
+  padding: 16px;
+  text-align: left;
+  box-shadow: 0 2px 8px #0001;
+}
+
+.editor-panel-block-hover {
+  position: absolute;
+  left: 0;
+  width: 40px;
+  cursor: pointer;
+  z-index: 10;
+  background: transparent;
+}
+
+.editor-panel-md-editor {
+  background: #fff;
+  border-radius: 8px;
+}

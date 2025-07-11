@@ -52,3 +52,73 @@
 .right-preview-scroll-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* App整体布局 */
+.app-root {
+  display: flex;
+  height: 100vh;
+  background: #f7f8fa;
+}
+
+.app-divider {
+  width: 8px;
+  cursor: col-resize;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.app-preview-outer {
+  flex: 1;
+  height: 100vh;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+.app-preview-inner {
+  background: #fff;
+  border-radius: 16px;
+  min-height: 600px;
+  padding: 40px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 2px 24px #0001;
+  margin: 0 auto;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.app-preview-title {
+  margin-top: 0;
+  text-align: center;
+}
+
+.resume-preview-root {
+  font-family: "思源黑体", Arial, sans-serif;
+  color: #222;
+}
+
+.resume-preview-name {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.resume-preview-icons {
+  margin-bottom: 16px;
+  color: #666;
+  font-size: 16px;
+}
+
+.resume-preview-hr {
+  border: none;
+  border-top: 1.5px solid #eee;
+  margin: 24px 0;
+}
+
+.resume-preview-content {
+  font-size: 17px;
+}

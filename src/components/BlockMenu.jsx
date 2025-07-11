@@ -1,12 +1,14 @@
 import React from "react";
-import { Dropdown, Menu, Button, Divider } from "antd";
+import { Dropdown, Button } from "antd";
 import {
   CopyOutlined,
   PlusOutlined,
-  DeleteOutlined,
   ColumnWidthOutlined,
+  DeleteOutlined,
+  EnterOutlined,
   BarsOutlined,
 } from "@ant-design/icons";
+import "./BlockMenu.css";
 
 export default function BlockMenu({
   top,
@@ -16,64 +18,91 @@ export default function BlockMenu({
   onLayout,
   onCopy,
   onClose,
+  menuOpen,
+  setMenuOpen,
 }) {
-  const menu = (
-    <Menu
-      style={{ minWidth: 160, borderRadius: 8, boxShadow: "0 2px 12px #0002" }}
-      onClick={({ key }) => {
-        if (key === "copy") onCopy();
-        if (key === "add") onAddRow();
-        if (key === "layout2") onLayout(2);
-        if (key === "layout3") onLayout(3);
-        if (key === "delete") onDelete();
+  const [open, setOpen] = React.useState(false);
+  const menuRef = React.useRef();
+
+  // 点击外部关闭菜单
+  React.useEffect(() => {
+    const isOpen = menuOpen !== undefined ? menuOpen : open;
+    if (!isOpen) return;
+    const handleClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        if (setMenuOpen) setMenuOpen(false);
+        else setOpen(false);
         onClose && onClose();
-      }}
-    >
-      <Menu.Item key="copy" icon={<CopyOutlined />}>
-        复制
-      </Menu.Item>
-      <Menu.Item key="add" icon={<PlusOutlined />}>
-        添加行
-      </Menu.Item>
-      <Menu.Item key="layout2" icon={<ColumnWidthOutlined />}>
-        左右布局（2列）
-      </Menu.Item>
-      <Menu.Item key="layout3" icon={<BarsOutlined />}>
-        多列布局（3列）
-      </Menu.Item>
-      <Divider style={{ margin: "4px 0" }} />
-      <Menu.Item key="delete" icon={<DeleteOutlined />} danger>
-        删除
-      </Menu.Item>
-    </Menu>
-  );
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open, menuOpen, setMenuOpen, onClose]);
+
+  const menuItems = [
+    { key: "copy", icon: <CopyOutlined />, label: "复制", onClick: onCopy },
+    { type: "divider" },
+    {
+      key: "add",
+      icon: <PlusOutlined />,
+      label: "添加一行",
+      onClick: onAddRow,
+    },
+    {
+      key: "enter",
+      icon: <EnterOutlined />,
+      label: "添加换行(空行)",
+      onClick: () => onAddRow && onAddRow("br"),
+    },
+    {
+      key: "layout",
+      icon: <ColumnWidthOutlined />,
+      label: "添加左右布局",
+      onClick: () => onLayout && onLayout(2),
+    },
+    { type: "divider" },
+    {
+      key: "delete",
+      icon: <DeleteOutlined />,
+      label: "删除",
+      danger: true,
+      onClick: onDelete,
+    },
+  ];
+
+  const isOpen = menuOpen !== undefined ? menuOpen : open;
+  const handleSetOpen = setMenuOpen ? setMenuOpen : setOpen;
 
   return (
-    <div style={{ position: "absolute", top, left, zIndex: 1000 }}>
+    <div
+      className="block-menu-root"
+      style={{ position: "absolute", top, left, zIndex: 1000 }}
+      ref={menuRef}
+    >
       <Dropdown
-        overlay={menu}
+        menu={{
+          items: menuItems,
+          onClick: ({ key }) => {
+            const item = menuItems.find((i) => i.key === key);
+            if (item && item.onClick) item.onClick();
+            handleSetOpen(false);
+            onClose && onClose();
+          },
+        }}
         trigger={["click"]}
+        open={isOpen}
+        onOpenChange={handleSetOpen}
         placement="rightTop"
         arrow
-        onOpenChange={(open) => {
-          if (!open) onClose && onClose();
-        }}
       >
         <Button
           shape="circle"
-          size="large"
-          style={{
-            width: 36,
-            height: 36,
-            background: "#f3f4f6",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 22,
-            border: "none",
-            boxShadow: "0 2px 8px #0002",
+          icon={<BarsOutlined style={{ fontSize: 20 }} />}
+          className={`block-menu-btn${isOpen ? " block-menu-btn-open" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSetOpen((v) => !v);
           }}
-          icon={<BarsOutlined />}
         />
       </Dropdown>
     </div>
