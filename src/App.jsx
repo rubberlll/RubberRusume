@@ -22,12 +22,20 @@ import {
   UserOutlined,
   PhoneOutlined,
   MailOutlined,
+  ProductOutlined,
+  AppstoreOutlined,
+  SmileOutlined,
+  SettingOutlined,
+  HeartOutlined,
+  StarOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
-import { Button, Space, Select } from "antd";
+import { Button, Space, Select, Tooltip, Modal, message } from "antd";
 import "antd/dist/reset.css";
 import React, { useRef, useState } from "react";
 import Split from "react-split";
 import "./split.css";
+import IconPickerModal from "./IconPickerModal";
 
 function ResumePreview({ html, iconTheme }) {
   // iconTheme: 'antd'（目前只支持 antd，可扩展）
@@ -104,7 +112,10 @@ function ResumePreview({ html, iconTheme }) {
 }
 
 function App() {
-  const [iconTheme, setIconTheme] = React.useState("antd");
+  const [iconTheme] = React.useState("antd");
+  const [iconPickerOpen, setIconPickerOpen] = React.useState(false);
+  const [editMode, setEditMode] = useState("wysiwyg"); // 新增编辑模式
+
   const [leftWidth, setLeftWidth] = useState(480); // 初始宽度
   const dragging = useRef(false);
 
@@ -161,12 +172,21 @@ function App() {
       <ul>
         <li>熟悉常见的HTML及HTML5元素，CSS/CSS3的基本语法与布局，能够精确还原设计稿</li>
         <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
+        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
+        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
+        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
       </ul>
     `,
   });
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "#f7f8fa" }}>
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        background: "#f7f8fa",
+      }}
+    >
       {/* 左侧编辑器（可拖拽宽度） */}
       <div
         style={{
@@ -189,29 +209,61 @@ function App() {
           }}
         >
           <Space>
-            <Button
-              icon={<UndoOutlined />}
-              onClick={() => editor && editor.chain().focus().undo().run()}
-              disabled={!editor?.can().undo()}
-            >
-              撤销
-            </Button>
-            <Button
-              icon={<RedoOutlined />}
-              onClick={() => editor && editor.chain().focus().redo().run()}
-              disabled={!editor?.can().redo()}
-            >
-              重做
-            </Button>
+            <Tooltip title="选择图标" placement="bottom">
+              <Button
+                icon={<ProductOutlined />}
+                shape="circle"
+                style={{ fontSize: 20 }}
+                onClick={() => setIconPickerOpen(true)}
+              />
+            </Tooltip>
+            <Tooltip title="撤销" placement="bottom">
+              <Button
+                icon={<UndoOutlined />}
+                onClick={() => editor && editor.chain().focus().undo().run()}
+                disabled={!editor?.can().undo()}
+                shape="circle"
+                style={{ fontSize: 18 }}
+              />
+            </Tooltip>
+            <Tooltip title="回退" placement="bottom">
+              <Button
+                icon={<RedoOutlined />}
+                onClick={() => editor && editor.chain().focus().redo().run()}
+                disabled={!editor?.can().redo()}
+                shape="circle"
+                style={{ fontSize: 18 }}
+              />
+            </Tooltip>
           </Space>
           <Space>
-            <Select
-              value={iconTheme}
-              style={{ width: 120 }}
-              onChange={setIconTheme}
-              options={[{ value: "antd", label: "Antd 图标" }]}
-            />
+            <Tooltip
+              title={
+                editMode === "wysiwyg" ? "切换为源码模式" : "切换为所见即所得"
+              }
+              placement="bottom"
+            >
+              <Button
+                onClick={() =>
+                  setEditMode(editMode === "wysiwyg" ? "code" : "wysiwyg")
+                }
+                shape="round"
+              >
+                {editMode === "wysiwyg" ? "源码模式" : "所见即所得"}
+              </Button>
+            </Tooltip>
           </Space>
+          <IconPickerModal
+            open={iconPickerOpen}
+            onClose={() => setIconPickerOpen(false)}
+            onCopy={(key) => {
+              if (key) {
+                setTimeout(() => message.success(`已复制: ${key}`), 200);
+              } else {
+                setTimeout(() => message.error("复制失败"), 200);
+              }
+            }}
+          />
         </div>
         <h2 style={{ marginTop: 0 }}>简历内容编辑</h2>
         <EditorContent
@@ -237,12 +289,11 @@ function App() {
         }}
         onMouseDown={onMouseDown}
       />
-      {/* 右侧预览区（固定宽度，居中灰色背景） */}
+      {/* 右侧预览区（flex:1自适应） */}
       <div
+        className="right-preview-scroll-hide"
         style={{
-          width: 900,
-          minWidth: 900,
-          maxWidth: 900,
+          flex: 1,
           height: "100vh",
           background: "#f3f4f6",
           display: "flex",
@@ -252,12 +303,14 @@ function App() {
         }}
       >
         <div
+          className="right-preview-scroll-hide"
           style={{
             background: "#fff",
             borderRadius: 16,
             minHeight: 600,
             padding: 40,
-            width: 800,
+            width: "100%",
+            maxWidth: 800,
             boxShadow: "0 2px 24px #0001",
             margin: "0 auto",
             maxHeight: "90vh",

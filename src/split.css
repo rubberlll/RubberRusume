@@ -16,23 +16,6 @@
   background: #bdbdbd;
 }
 
-/* 左侧编辑器滚动条美化 */
-.split-pane > div:first-child {
-  scrollbar-width: thin;
-  scrollbar-color: #f0f0f0 #fff;
-}
-.split-pane > div:first-child::-webkit-scrollbar {
-  width: 4px;
-  background: #fff;
-}
-.split-pane > div:first-child::-webkit-scrollbar-thumb {
-  background: #f0f0f0;
-  border-radius: 4px;
-}
-.split-pane > div:first-child::-webkit-scrollbar-thumb:hover {
-  background: #e0e0e0;
-}
-
 /* 右侧预览区滚动条隐藏 */
 .split-pane > div:last-child {
   scrollbar-width: none;
