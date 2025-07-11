@@ -1,0 +1,42 @@
+.split-pane {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+}
+.split-pane > .gutter {
+  background: #e0e0e0;
+  cursor: col-resize;
+  width: 8px;
+  min-width: 8px;
+  transition: background 0.2s;
+  z-index: 10;
+}
+.split-pane > .gutter:hover {
+  background: #bdbdbd;
+}
+
+/* 左侧编辑器滚动条美化 */
+.split-pane > div:first-child {
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0e0 #fff;
+}
+.split-pane > div:first-child::-webkit-scrollbar {
+  width: 6px;
+  background: #fff;
+}
+.split-pane > div:first-child::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+.split-pane > div:first-child::-webkit-scrollbar-thumb:hover {
+  background: #d0d0d0;
+}
+
+/* 右侧预览区滚动条隐藏 */
+.split-pane > div:last-child {
+  scrollbar-width: none;
+}
+.split-pane > div:last-child::-webkit-scrollbar {
+  display: none;
+}
