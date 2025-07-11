@@ -1,5 +1,5 @@
 import React from "react";
-import { message, Modal } from "antd";
+import {  Modal } from "antd";
 import {
   ProductOutlined,
   AppstoreOutlined,

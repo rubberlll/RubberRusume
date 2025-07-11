@@ -36,6 +36,8 @@ import React, { useRef, useState } from "react";
 import Split from "react-split";
 import "./split.css";
 import IconPickerModal from "./IconPickerModal";
+import TurndownService from "turndown";
+import { marked } from "marked";
 
 function ResumePreview({ html, iconTheme }) {
   // iconTheme: 'antd'（目前只支持 antd，可扩展）
@@ -116,7 +118,31 @@ function App() {
   const [iconPickerOpen, setIconPickerOpen] = React.useState(false);
   const [editMode, setEditMode] = useState("wysiwyg"); // 新增编辑模式
 
-  const [leftWidth, setLeftWidth] = useState(480); // 初始宽度
+  // 主内容状态
+  const initialHTML = `
+      <h2>张字轩</h2>
+      <p>icon:user 男 / 2005.2</p>
+      <p>icon:phone 18992204601 icon:email 2405206056@qq.com</p>
+      <h3>教育背景</h3>
+      <p>陕西科技大学，计算机科学与技术，本科 <b>2022.09 - 2026.06</b></p>
+      <p>证书：CET-6</p>
+      <p>主修课程：网络应用程序设计，计算机网络，操作系统，编译原理</p>
+      <h3>专业技能</h3>
+      <ul>
+        <li>熟悉常见的HTML及HTML5元素，CSS/CSS3的基本语法与布局，能够精确还原设计稿</li>
+        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
+        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
+        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
+        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
+      </ul>
+    `;
+  const turndownService = new TurndownService();
+  const [htmlContent, setHtmlContent] = useState(initialHTML);
+  const [markdownContent, setMarkdownContent] = useState(
+    turndownService.turndown(initialHTML)
+  );
+
+  const [leftWidth, setLeftWidth] = useState(580); // 初始宽度
   const dragging = useRef(false);
 
   // 拖拽事件
@@ -144,6 +170,7 @@ function App() {
     };
   }, []);
 
+  // Tiptap 编辑器实例
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -160,24 +187,33 @@ function App() {
         placeholder: "请输入简历内容，可插入标题、列表、代码块等...",
       }),
     ],
-    content: `
-      <h2>张字轩</h2>
-      <p>icon:user 男 / 2005.2</p>
-      <p>icon:phone 18992204601 icon:email 2405206056@qq.com</p>
-      <h3>教育背景</h3>
-      <p>陕西科技大学，计算机科学与技术，本科 <b>2022.09 - 2026.06</b></p>
-      <p>证书：CET-6</p>
-      <p>主修课程：网络应用程序设计，计算机网络，操作系统，编译原理</p>
-      <h3>专业技能</h3>
-      <ul>
-        <li>熟悉常见的HTML及HTML5元素，CSS/CSS3的基本语法与布局，能够精确还原设计稿</li>
-        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
-        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
-        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
-        <li>熟悉掌握JavaScript及ES6语法特性，理解this指向、作用域、箭头函数、Promise等使用</li>
-      </ul>
-    `,
+    content: htmlContent,
+    onUpdate: ({ editor }) => {
+      if (editMode === "wysiwyg") {
+        setHtmlContent(editor.getHTML());
+        setMarkdownContent(turndownService.turndown(editor.getHTML()));
+      }
+    },
   });
+
+  // 切换模式时内容互转
+  React.useEffect(() => {
+    if (editMode === "code") {
+      // 切换到源码模式，将 htmlContent 转为 markdown
+      setMarkdownContent(turndownService.turndown(htmlContent));
+    } else if (editMode === "wysiwyg") {
+      // 切换到所见即所得，将 markdownContent 转为 html
+      setHtmlContent(marked.parse(markdownContent));
+      editor && editor.commands.setContent(marked.parse(markdownContent));
+    }
+    // eslint-disable-next-line
+  }, [editMode]);
+
+  // Markdown 编辑器内容变更
+  const handleMarkdownChange = (val) => {
+    setMarkdownContent(val || "");
+    setHtmlContent(marked.parse(val || ""));
+  };
 
   return (
     <div
@@ -266,17 +302,36 @@ function App() {
           />
         </div>
         <h2 style={{ marginTop: 0 }}>简历内容编辑</h2>
-        <EditorContent
-          editor={editor}
-          style={{
-            background: "#fff",
-            borderRadius: 8,
-            minHeight: 600,
-            padding: 16,
-            textAlign: "left",
-            boxShadow: "0 2px 8px #0001",
-          }}
-        />
+        {editMode === "wysiwyg" ? (
+          <EditorContent
+            editor={editor}
+            style={{
+              background: "#fff",
+              borderRadius: 8,
+              minHeight: 600,
+              padding: 16,
+              textAlign: "left",
+              boxShadow: "0 2px 8px #0001",
+            }}
+          />
+        ) : (
+          <MDEditor
+            value={markdownContent}
+            height={600}
+            onChange={handleMarkdownChange}
+            style={{ background: "#fff", borderRadius: 8 }}
+            preview="edit"
+            commands={[
+              commands.bold,
+              commands.italic,
+              commands.orderedListCommand,
+              commands.unorderedListCommand,
+              commands.link,
+              commands.image,
+            ]}
+            extraCommands={[commands.codeEdit, commands.codePreview]}
+          />
+        )}
       </div>
       {/* 分割条 */}
       <div
@@ -318,7 +373,7 @@ function App() {
           }}
         >
           <h2 style={{ marginTop: 0, textAlign: "center" }}>简历预览</h2>
-          <ResumePreview html={editor?.getHTML() || ""} iconTheme={iconTheme} />
+          <ResumePreview html={htmlContent} iconTheme={iconTheme} />
         </div>
       </div>
     </div>
