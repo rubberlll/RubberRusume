@@ -1,43 +1,14 @@
 // import { useState } from "react";
 
 import "./App.css";
-import CodeMirror from "@uiw/react-codemirror";
-import MDEditor, { commands } from "@uiw/react-md-editor";
-import MarkdownPreview from "@uiw/react-markdown-preview";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Blockquote from "@tiptap/extension-blockquote";
-import CodeBlock from "@tiptap/extension-code-block";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
-import ListItem from "@tiptap/extension-list-item";
-import Heading from "@tiptap/extension-heading";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import Dropcursor from "@tiptap/extension-dropcursor";
-import Gapcursor from "@tiptap/extension-gapcursor";
-import Placeholder from "@tiptap/extension-placeholder";
-import {
-  UndoOutlined,
-  RedoOutlined,
-  UserOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  ProductOutlined,
-  AppstoreOutlined,
-  SmileOutlined,
-  SettingOutlined,
-  HeartOutlined,
-  StarOutlined,
-  HomeOutlined,
-} from "@ant-design/icons";
-import { Button, Space, Select, Tooltip, Modal, message } from "antd";
+
+import { UserOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
+
 import "antd/dist/reset.css";
-import React, { useRef, useState, useEffect } from "react";
-import Split from "react-split";
+import React, { useRef, useState } from "react";
 import "./split.css";
-import IconPickerModal from "./IconPickerModal";
+
 import TurndownService from "turndown";
-import { marked } from "marked";
 
 import EditorPanel from "./components/EditorPanel";
 

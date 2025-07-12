@@ -159,22 +159,45 @@ export default function EditorPanel({
     };
   }, [editMode, editor, menuOpen, setMenuState, menuState.nodeEl]);
 
+  // 工具函数：通过块索引获取文档中的 pos
+  function getBlockPosByIdx(idx) {
+    let foundPos = null;
+    let count = 0;
+    editor?.state?.doc?.descendants?.((node, pos) => {
+      if (
+        node.type.name === "paragraph" ||
+        node.type.name === "heading" ||
+        node.type.name === "codeBlock" ||
+        node.type.name === "blockquote" ||
+        node.type.name === "listItem"
+      ) {
+        if (count === idx) {
+          foundPos = pos;
+          return false;
+        }
+        count++;
+      }
+      return true;
+    });
+    return foundPos;
+  }
+
   // 菜单操作
   const handleAddRow = () => {
-    if (!editor || menuState.blockPos == null || menuState.blockPos < 0) {
+    const pos = getBlockPosByIdx(menuState.blockIdx);
+    console.log("handleAddRow pos", pos);
+    if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
       return;
     }
-    editor
-      .chain()
-      .focus()
-      .insertContentAt(menuState.blockPos, "<p>新的一行</p>")
-      .run();
+    editor.chain().focus().insertContentAt(pos, "<p>新的一行</p>").run();
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };
   const handleDelete = () => {
-    if (!editor || menuState.blockPos == null || menuState.blockPos < 0) {
+    const pos = getBlockPosByIdx(menuState.blockIdx);
+    console.log("handleDelete pos", pos);
+    if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
       return;
     }
@@ -182,7 +205,7 @@ export default function EditorPanel({
     const chain = editor
       .chain()
       .focus()
-      .setNodeSelection(menuState.blockPos)
+      .setNodeSelection(pos)
       .deleteSelection();
     // fallback: 如果没删掉，再用原有 nodeEl 方式
     if (!chain.run()) {
@@ -190,8 +213,8 @@ export default function EditorPanel({
         message.error("无法定位当前块，操作失败");
         return;
       }
-      const from = editor.view.posAtDOM(menuState.nodeEl, 0);
-      if (from === -1) {
+      const from = getBlockPosByIdx(menuState.blockIdx);
+      if (from == null || from < 0) {
         message.error("无法定位当前块，操作失败");
         return;
       }
@@ -203,7 +226,9 @@ export default function EditorPanel({
     setMenuState((m) => ({ ...m, show: false }));
   };
   const handleLayout = (cols) => {
-    if (!editor || menuState.blockPos == null || menuState.blockPos < 0) {
+    const pos = getBlockPosByIdx(menuState.blockIdx);
+    console.log("handleLayout pos", pos);
+    if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
       return;
     }
@@ -211,16 +236,14 @@ export default function EditorPanel({
       cols === 2
         ? '<div style="display:flex;gap:16px"><div style="flex:1">左列</div><div style="flex:1">右列</div></div>'
         : '<div style="display:flex;gap:16px"><div style="flex:1">列1</div><div style="flex:1">列2</div><div style="flex:1">列3</div></div>';
-    editor.chain().focus().insertContentAt(menuState.blockPos, html).run();
+    editor.chain().focus().insertContentAt(pos, html).run();
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };
   const handleCopy = () => {
-    if (
-      !menuState.nodeEl ||
-      menuState.blockPos == null ||
-      menuState.blockPos < 0
-    ) {
+    const pos = getBlockPosByIdx(menuState.blockIdx);
+    console.log("handleCopy pos", pos);
+    if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
       return;
     }
@@ -232,9 +255,9 @@ export default function EditorPanel({
 
   // 切换块类型
   const handleChangeBlockType = (type) => {
-    if (!editor || !menuState.nodeEl) return;
-    const pos = editor.view.posAtDOM(menuState.nodeEl, 0);
-    if (pos < 0) return;
+    const pos = getBlockPosByIdx(menuState.blockIdx);
+    console.log("handleChangeBlockType pos", pos);
+    if (!editor || pos == null || pos < 0) return;
     editor.chain().focus().setNodeSelection(pos).run();
     if (type === "正文") {
       editor.chain().focus().setParagraph().run();
@@ -342,13 +365,13 @@ export default function EditorPanel({
                   ...m,
                   nodeEl: rect.node,
                   show: true,
+                  blockIdx: idx,
                   top:
                     rect.top -
                     (editorContentRef.current?.getBoundingClientRect().top ||
                       0) +
                     4,
                   left: -44,
-                  blockPos: editor?.view?.posAtDOM(rect.node, 0),
                 }));
                 if (rect.node && rect.node.classList) {
                   rect.node.classList.add("editor-panel-block-active");
@@ -359,13 +382,13 @@ export default function EditorPanel({
                   ...m,
                   nodeEl: rect.node,
                   show: true,
+                  blockIdx: idx,
                   top:
                     rect.top -
                     (editorContentRef.current?.getBoundingClientRect().top ||
                       0) +
                     4,
                   left: -44,
-                  blockPos: editor?.view?.posAtDOM(rect.node, 0),
                 }));
                 if (rect.node && rect.node.classList) {
                   rect.node.classList.add("editor-panel-block-active");
@@ -380,13 +403,13 @@ export default function EditorPanel({
                   ...m,
                   nodeEl: rect.node,
                   show: true,
+                  blockIdx: idx,
                   top:
                     rect.top -
                     (editorContentRef.current?.getBoundingClientRect().top ||
                       0) +
                     4,
                   left: -44,
-                  blockPos: editor?.view?.posAtDOM(rect.node, 0),
                 }));
               }}
             />
@@ -417,6 +440,7 @@ export default function EditorPanel({
                   ...m,
                   show: true,
                   nodeEl: menuState.nodeEl,
+                  blockIdx: menuState.blockIdx,
                 }));
                 if (menuState.nodeEl && menuState.nodeEl.classList) {
                   menuState.nodeEl.classList.add("editor-panel-block-active");
@@ -427,6 +451,7 @@ export default function EditorPanel({
                   ...m,
                   show: true,
                   nodeEl: menuState.nodeEl,
+                  blockIdx: menuState.blockIdx,
                 }));
                 if (menuState.nodeEl && menuState.nodeEl.classList) {
                   menuState.nodeEl.classList.add("editor-panel-block-active");
@@ -445,6 +470,7 @@ export default function EditorPanel({
                   ...m,
                   show: true,
                   nodeEl: menuState.nodeEl,
+                  blockIdx: menuState.blockIdx,
                 }));
               }}
             />
