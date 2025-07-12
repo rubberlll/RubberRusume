@@ -18,3 +18,12 @@
 .block-menu-btn-open {
   box-shadow: 0 2px 8px #0002;
 }
+
+.block-menu-type-btn:hover {
+  color: #fa8c16 !important;
+  background: #fff7e6 !important;
+}
+
+.block-menu-item:hover {
+  background: #f5f5f5;
+}

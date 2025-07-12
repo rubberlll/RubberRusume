@@ -80,14 +80,19 @@ export default function BlockMenu({
         {["正文", "H1", "H2", "H3", "H4", "H5"].map((t) => (
           <span
             key={t}
+            className={
+              "block-menu-type-btn" +
+              (t === blockType ? " block-menu-type-btn-active" : "")
+            }
             style={{
-              color: t === blockType ? "#52c41a" : "#222",
+              color: t === blockType ? "#fa8c16" : "#222",
               fontWeight: t === blockType ? 700 : 400,
               fontSize: 15,
               cursor: "pointer",
               padding: "2px 4px",
               borderRadius: 3,
-              background: t === blockType ? "#f6ffed" : "none",
+              background: t === blockType ? "#fff7e6" : "none",
+              transition: "all 0.15s",
             }}
             onClick={() => {
               if (onChangeBlockType) onChangeBlockType(t);

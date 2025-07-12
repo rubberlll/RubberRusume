@@ -49,7 +49,7 @@ export default function EditorPanel({
       BulletList,
       OrderedList,
       ListItem,
-      Heading.configure({ levels: [1, 2, 3] }),
+      Heading.configure({ levels: [1, 2, 3, 4, 5, 6] }),
       HorizontalRule,
       Dropcursor,
       Gapcursor,
@@ -235,25 +235,12 @@ export default function EditorPanel({
     if (!editor || !menuState.nodeEl) return;
     const pos = editor.view.posAtDOM(menuState.nodeEl, 0);
     if (pos < 0) return;
+    editor.chain().focus().setNodeSelection(pos).run();
     if (type === "正文") {
-      editor
-        .chain()
-        .focus()
-        .command(({ tr }) => {
-          tr.setNodeMarkup(pos, editor.schema.nodes.paragraph);
-          return true;
-        })
-        .run();
-    } else if (/^H[1-5]$/.test(type)) {
+      editor.chain().focus().setParagraph().run();
+    } else if (/^H[1-6]$/.test(type)) {
       const level = Number(type.slice(1));
-      editor
-        .chain()
-        .focus()
-        .command(({ tr, state }) => {
-          tr.setNodeMarkup(pos, editor.schema.nodes.heading, { level });
-          return true;
-        })
-        .run();
+      editor.chain().focus().setHeading({ level }).run();
     }
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
@@ -363,7 +350,9 @@ export default function EditorPanel({
                   left: -44,
                   blockPos: editor?.view?.posAtDOM(rect.node, 0),
                 }));
-                rect.node.classList.add("editor-panel-block-active");
+                if (rect.node && rect.node.classList) {
+                  rect.node.classList.add("editor-panel-block-active");
+                }
               }}
               onMouseMove={() => {
                 setMenuState((m) => ({
@@ -378,7 +367,9 @@ export default function EditorPanel({
                   left: -44,
                   blockPos: editor?.view?.posAtDOM(rect.node, 0),
                 }));
-                rect.node.classList.add("editor-panel-block-active");
+                if (rect.node && rect.node.classList) {
+                  rect.node.classList.add("editor-panel-block-active");
+                }
               }}
               onMouseLeave={() => {
                 rect.node.classList.remove("editor-panel-block-active");
@@ -406,9 +397,12 @@ export default function EditorPanel({
               className="editor-panel-block-hover"
               style={{
                 position: "fixed",
-                top: menuState.nodeEl.getBoundingClientRect
-                  ? menuState.nodeEl.getBoundingClientRect().top
-                  : 0,
+                top:
+                  menuState.nodeEl && editorContentRef.current
+                    ? menuState.nodeEl.getBoundingClientRect().top -
+                      editorContentRef.current.getBoundingClientRect().top +
+                      4
+                    : 0,
                 left: 0,
                 width: menuState.nodeEl.getBoundingClientRect
                   ? menuState.nodeEl.getBoundingClientRect().left
