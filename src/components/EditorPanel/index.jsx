@@ -77,21 +77,40 @@ export default function EditorPanel({
     // eslint-disable-next-line
   }, [editMode]);
 
-  // 计算所有块的位置和节点
+  // 计算所有块的位置和节点，去掉节流，滚动时直接更新
   useEffect(() => {
     if (!editorContentRef.current) return;
     const dom = editorContentRef.current;
-    const blocks = dom.querySelectorAll("p, h1, h2, h3, h4, h5, h6, li");
-    const rects = Array.from(blocks).map((node) => {
-      const rect = node.getBoundingClientRect();
-      return {
-        node,
-        top: rect.top,
-        height: node.offsetHeight,
-        width: rect.left,
-      };
-    });
-    setBlockRects(rects);
+
+    function updateRects() {
+      const blocks = dom.querySelectorAll("p, h1, h2, h3, h4, h5, h6, li");
+      const rects = Array.from(blocks).map((node) => {
+        const rect = node.getBoundingClientRect();
+        return {
+          node,
+          top: rect.top,
+          height: node.offsetHeight,
+          width: rect.left,
+        };
+      });
+      setBlockRects(rects);
+    }
+
+    // 初始计算
+    updateRects();
+
+    dom.addEventListener("scroll", updateRects);
+    window.addEventListener("scroll", updateRects);
+
+    // 内容变化时也要更新
+    const observer = new MutationObserver(updateRects);
+    observer.observe(dom, { childList: true, subtree: true });
+
+    return () => {
+      dom.removeEventListener("scroll", updateRects);
+      window.removeEventListener("scroll", updateRects);
+      observer.disconnect();
+    };
   }, [htmlContent, markdownContent, editMode]);
 
   // Markdown 编辑器内容变更
