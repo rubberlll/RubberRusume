@@ -246,6 +246,7 @@ export default function EditorPanel({
   };
   const handleLayout = (cols) => {
     const pos = getBlockPosByIdx(menuState.blockIdx);
+    console.log(pos);
     console.log("handleLayout pos", pos);
     if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
@@ -274,8 +275,8 @@ export default function EditorPanel({
 
   // 切换块类型
   const handleChangeBlockType = (type) => {
-    const pos = getBlockPosByIdx(menuState.blockIdx);
-    console.log("handleChangeBlockType pos", pos);
+    const pos = menuState.blockPos;
+
     if (!editor || pos == null || pos < 0) return;
     editor.chain().focus().setNodeSelection(pos).run();
     if (type === "正文") {
@@ -460,6 +461,10 @@ export default function EditorPanel({
                   show: true,
                   nodeEl: menuState.nodeEl,
                   blockIdx: menuState.blockIdx,
+                  blockPos:
+                    editor && menuState.nodeEl
+                      ? editor.view.posAtDOM(menuState.nodeEl, 0)
+                      : m.blockPos,
                 }));
                 if (menuState.nodeEl && menuState.nodeEl.classList) {
                   menuState.nodeEl.classList.add("editor-panel-block-active");
@@ -471,6 +476,10 @@ export default function EditorPanel({
                   show: true,
                   nodeEl: menuState.nodeEl,
                   blockIdx: menuState.blockIdx,
+                  blockPos:
+                    editor && menuState.nodeEl
+                      ? editor.view.posAtDOM(menuState.nodeEl, 0)
+                      : m.blockPos,
                 }));
                 if (menuState.nodeEl && menuState.nodeEl.classList) {
                   menuState.nodeEl.classList.add("editor-panel-block-active");
@@ -490,6 +499,10 @@ export default function EditorPanel({
                   show: true,
                   nodeEl: menuState.nodeEl,
                   blockIdx: menuState.blockIdx,
+                  blockPos:
+                    editor && menuState.nodeEl
+                      ? editor.view.posAtDOM(menuState.nodeEl, 0)
+                      : m.blockPos,
                 }));
               }}
             />

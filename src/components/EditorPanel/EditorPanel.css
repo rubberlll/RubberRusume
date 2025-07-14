@@ -49,3 +49,8 @@
   background: #fff;
   border-radius: 8px;
 }
+
+.editor-panel-block-active {
+  background: #e8a20c !important; /* 橘黄色 */
+  transition: background 0.2s;
+}

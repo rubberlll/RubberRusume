@@ -155,7 +155,7 @@ export default function BlockMenu({
             width: 38,
             height: 38,
             background: "#fff",
-            border: isOpen ? "2px solid #52c41a" : "1px solid #d9d9d9",
+            border: isOpen ? "3px solid #fa8c16" : "1px solid #d9d9d9",
             borderRadius: 8,
             display: "flex",
             alignItems: "center",
