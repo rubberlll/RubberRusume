@@ -54,7 +54,7 @@ export default function EditorPanel({
       Dropcursor,
       Gapcursor,
       Placeholder.configure({
-        placeholder: "请输入简历内容，可插入标题、列表、代码块等...",
+        placeholder: "输入你想插入的内容",
       }),
     ],
     content: htmlContent,
@@ -203,13 +203,14 @@ export default function EditorPanel({
 
   // 菜单操作
   const handleAddRow = () => {
-    const pos = getBlockPosByIdx(menuState.blockIdx);
-    console.log("handleAddRow pos", pos);
+    const pos = menuState.blockPos;
     if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
       return;
     }
-    editor.chain().focus().insertContentAt(pos, "<p>新的一行</p>").run();
+    const node = editor.state.doc.nodeAt(pos);
+    const insertPos = node ? pos + node.nodeSize : pos;
+    editor.chain().focus().insertContentAt(insertPos, "<p></p>").run();
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };

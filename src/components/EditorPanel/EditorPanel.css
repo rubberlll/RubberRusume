@@ -54,3 +54,15 @@
   background: #e8a20c !important; /* 橘黄色 */
   transition: background 0.2s;
 }
+
+.ProseMirror p.is-empty::before,
+.tiptap p.is-empty::before {
+  content: attr(data-placeholder);
+  color: #bfbfbf;
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  user-select: none;
+  font-size: 15px;
+  line-height: 1.7;
+}
