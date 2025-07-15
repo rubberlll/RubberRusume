@@ -1,0 +1,122 @@
+.header-bar-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+.header-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.header-bar-back {
+  font-size: 22px;
+  color: #888;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: color 0.2s;
+}
+.header-bar-back:hover {
+  color: #ff9900;
+}
+.header-bar-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-right: 24px;
+  color: #ff7a00;
+}
+.header-bar-title-input {
+  transition: box-shadow 0.2s, border-color 0.2s;
+  border: 2.5px solid transparent;
+}
+.header-bar-title-input:hover,
+.header-bar-title-input:focus {
+  border: 2.5px solid transparent !important;
+  box-shadow: 0 0 0 2.5px #ff912ae1 !important;
+  background: #fff !important;
+}
+.header-bar-menu {
+  font-size: 15px;
+  color: #ff7a00;
+  margin-right: 18px;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-weight: 700;
+}
+.header-bar-menu:last-child {
+  margin-right: 0;
+}
+.header-bar-menu:hover {
+  color: #ff9900;
+}
+.header-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-bar-help {
+  background: #f5f5f5;
+  border-radius: 50%;
+  padding: 0 6px;
+  font-size: 13px;
+  color: #888;
+  margin-left: 2px;
+}
+.header-bar-history {
+  font-size: 15px;
+  color: #888;
+  margin-left: 2px;
+}
+.header-bar-btn {
+  background: #fff;
+  border: 1px solid #ff7a00;
+  color: #ff7a00;
+  border-radius: 4px;
+  padding: 4px 18px;
+  font-size: 15px;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  font-weight: 700;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.header-bar-btn:hover {
+  background: #ffe6cc;
+}
+.header-bar-btn-primary {
+  background: #ff7a00;
+  color: #fff;
+  border: 1px solid #ff7a00;
+  font-weight: 700;
+  margin-right: 16px;
+}
+.header-bar-btn-primary:hover {
+  background: #ffd8a6;
+  color: #fff;
+}
+.header-bar-btn:focus,
+.header-bar-btn:active,
+.header-bar-btn-primary:focus,
+.header-bar-btn-primary:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.header-bar-menu-group.ant-menu-horizontal,
+.header-bar-menu-group.ant-menu,
+.header-bar-menu-group .ant-menu,
+.header-bar-menu-group .ant-menu-overflow,
+.header-bar-menu-group .ant-menu-root {
+  border-bottom: none !important;
+  box-shadow: none !important;
+}

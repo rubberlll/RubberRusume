@@ -55,6 +55,7 @@
 
 /* App整体布局 */
 .app-root {
+  padding-top: 56px;
   display: flex;
   height: 100vh;
   background: #f7f8fa;
@@ -88,9 +89,4 @@
   margin: 0 auto;
   max-height: 90vh;
   overflow: auto;
-}
-
-.app-preview-title {
-  margin-top: 0;
-  text-align: center;
 }

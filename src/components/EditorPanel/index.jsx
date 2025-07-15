@@ -359,7 +359,7 @@ export default function EditorPanel({
           }}
         />
       </div>
-      <h2 className="editor-panel-title">简历内容编辑</h2>
+
       {editMode === "wysiwyg" ? (
         <div className="editor-panel-content-rel">
           <EditorContent
