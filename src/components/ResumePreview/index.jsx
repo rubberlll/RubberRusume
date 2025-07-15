@@ -2,7 +2,22 @@ import React from "react";
 import { UserOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
 import "./index.css";
 
-function ResumePreview({ html, iconTheme }) {
+function generateCustomStyle(styleConfig) {
+  let css = "";
+  if (!styleConfig) return css;
+  Object.entries(styleConfig).forEach(([tag, conf]) => {
+    css += `\n.resume-preview-content ${tag} { font-size: ${
+      conf.fontSize
+    }px !important; margin-top: ${
+      conf.marginTop
+    }px !important; margin-bottom: ${conf.marginBottom}px !important;${
+      tag === "h1" || tag === "h2" ? " color: #222; font-weight: bold;" : ""
+    } }`;
+  });
+  return css;
+}
+
+function ResumePreview({ html, iconTheme, styleConfig }) {
   // iconTheme: 'antd'（目前只支持 antd，可扩展）
   const iconMap = {
     antd: {
@@ -64,19 +79,21 @@ function ResumePreview({ html, iconTheme }) {
     const parts = htmlStr.split(
       /(<span data-icon="icon:(user|phone|email)"><\/span>)/g
     );
-    return parts.map((part, i) => {
-      const match = part.match(
-        /<span data-icon="(icon:(user|phone|email))"><\/span>/
-      );
-      if (match) {
-        return React.cloneElement(iconMap[iconTheme][match[1]], {
-          key: `icon-${i}`,
-        });
-      }
-      return (
-        <span key={`txt-${i}`} dangerouslySetInnerHTML={{ __html: part }} />
-      );
-    });
+    return parts
+      .filter((part) => part && part.replace(/<[^>]+>/g, "").trim() !== "") // 过滤纯空内容
+      .map((part, i) => {
+        const match = part.match(
+          /<span data-icon="(icon:(user|phone|email))"><\/span>/
+        );
+        if (match) {
+          return React.cloneElement(iconMap[iconTheme][match[1]], {
+            key: `icon-${i}`,
+          });
+        }
+        return (
+          <span key={`txt-${i}`} dangerouslySetInnerHTML={{ __html: part }} />
+        );
+      });
   }
 
   // 渲染自定义块
@@ -112,6 +129,7 @@ function ResumePreview({ html, iconTheme }) {
 
   return (
     <div className="resume-preview-root">
+      <style>{generateCustomStyle(styleConfig)}</style>
       <div className="resume-preview-content">
         {parsedParts.map((part, i) =>
           part.type === "block"

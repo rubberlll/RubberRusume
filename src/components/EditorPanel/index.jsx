@@ -1,6 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Button, Space, Tooltip, message } from "antd";
-import { UndoOutlined, RedoOutlined, ProductOutlined } from "@ant-design/icons";
+import {
+  UndoOutlined,
+  RedoOutlined,
+  ProductOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -35,6 +40,7 @@ export default function EditorPanel({
   setMenuOpen,
   iconPickerOpen,
   setIconPickerOpen,
+  setFontPanelOpen,
 }) {
   const editorContentRef = useRef();
   const turndownService = new TurndownService();
@@ -294,6 +300,14 @@ export default function EditorPanel({
               shape="circle"
               className="editor-panel-toolbar-btn"
               onClick={() => setIconPickerOpen(true)}
+            />
+          </Tooltip>
+          <Tooltip title="样式设置" placement="bottom">
+            <Button
+              icon={<SettingOutlined />}
+              shape="circle"
+              className="editor-panel-toolbar-btn"
+              onClick={() => setFontPanelOpen(true)}
             />
           </Tooltip>
           <Tooltip title="撤销" placement="bottom">

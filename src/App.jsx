@@ -12,6 +12,7 @@ import TurndownService from "turndown";
 
 import EditorPanel from "./components/EditorPanel";
 import ResumePreview from "./components/ResumePreview";
+import FontStyleConfigPanel from "./components/FontStyleConfigPanel";
 
 function App() {
   const initialHTML = `
@@ -73,6 +74,20 @@ function App() {
     };
   }, []);
 
+  const defaultStyleConfig = {
+    h1: { fontSize: 30, marginTop: 0, marginBottom: 20 },
+    h2: { fontSize: 20, marginTop: 10, marginBottom: 2 },
+    h3: { fontSize: 13, marginTop: 8, marginBottom: 5 },
+    h4: { fontSize: 13, marginTop: 8, marginBottom: 5 },
+    h5: { fontSize: 13, marginTop: 8, marginBottom: 5 },
+    h6: { fontSize: 13, marginTop: 8, marginBottom: 5 },
+    p: { fontSize: 13, marginTop: 0, marginBottom: 8 },
+    li: { fontSize: 13, marginTop: 0, marginBottom: 1 },
+    b: { fontSize: 13, marginTop: 0, marginBottom: 0 },
+  };
+  const [styleConfig, setStyleConfig] = useState(defaultStyleConfig);
+  const [fontPanelOpen, setFontPanelOpen] = useState(false);
+
   return (
     <div className="app-root">
       {/* 左侧编辑器（可拖拽宽度） */}
@@ -92,6 +107,7 @@ function App() {
         iconPickerOpen={iconPickerOpen}
         setIconPickerOpen={setIconPickerOpen}
         onMouseDown={onMouseDown}
+        setFontPanelOpen={setFontPanelOpen}
       />
       <div
         className="app-divider"
@@ -108,7 +124,20 @@ function App() {
       <div className="right-preview-scroll-hide app-preview-outer">
         <div className="right-preview-scroll-hide app-preview-inner">
           <h2 className="app-preview-title">简历预览</h2>
-          <ResumePreview html={htmlContent} iconTheme={iconTheme} />
+          <ResumePreview
+            html={htmlContent}
+            iconTheme={iconTheme}
+            styleConfig={styleConfig}
+          />
+          <FontStyleConfigPanel
+            open={fontPanelOpen}
+            value={styleConfig}
+            onOk={(cfg) => {
+              setStyleConfig(cfg);
+              setFontPanelOpen(false);
+            }}
+            onCancel={() => setFontPanelOpen(false)}
+          />
         </div>
       </div>
     </div>
