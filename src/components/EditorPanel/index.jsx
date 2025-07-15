@@ -21,10 +21,9 @@ import Gapcursor from "@tiptap/extension-gapcursor";
 import Placeholder from "@tiptap/extension-placeholder";
 import IconPickerModal from "../../IconPickerModal";
 import BlockMenu from "../BlockMenu";
-import TurndownService from "turndown";
-import { marked } from "marked";
 import "./EditorPanel.css";
 import CustomBlock from "./CustomBlock.jsx";
+import { Markdown } from "tiptap-markdown";
 
 export default function EditorPanel({
   leftWidth,
@@ -44,7 +43,6 @@ export default function EditorPanel({
   setFontPanelOpen,
 }) {
   const editorContentRef = useRef();
-  const turndownService = new TurndownService();
   const [blockRects, setBlockRects] = useState([]);
 
   // Tiptap 编辑器实例
@@ -64,33 +62,14 @@ export default function EditorPanel({
         placeholder: "输入你想插入的内容",
       }),
       CustomBlock,
+      Markdown,
     ],
     content: htmlContent,
     onUpdate: ({ editor }) => {
       if (editMode === "wysiwyg") {
-        // 自动将::: start ... ::: end结构转为CustomBlock节点
-        const html = editor.getHTML();
-        const blockRegex = /::: *start([\s\S]*?)::: *end/g;
-        let match;
-        let tr = editor.state.tr;
-        let changed = false;
-        while ((match = blockRegex.exec(html))) {
-          const blockContent = match[1];
-          const columns = blockContent
-            .split(/:::/g)
-            .map((s) => s.trim())
-            .filter(Boolean);
-          // 插入CustomBlock节点
-          tr = tr.replaceSelectionWith(
-            editor.schema.nodes.customBlock.create({ columns })
-          );
-          changed = true;
-        }
-        if (changed) {
-          editor.view.dispatch(tr);
-        }
         setHtmlContent(editor.getHTML());
-        setMarkdownContent(turndownService.turndown(editor.getHTML()));
+        // 用tiptap-markdown导出Markdown
+        setMarkdownContent(editor.storage.markdown.getMarkdown());
       }
     },
   });
@@ -98,10 +77,12 @@ export default function EditorPanel({
   // 切换模式时内容互转
   useEffect(() => {
     if (editMode === "code") {
-      setMarkdownContent(turndownService.turndown(htmlContent));
+      // 只用Markdown内容
+      setMarkdownContent(editor?.storage?.markdown?.getMarkdown?.() || "");
     } else if (editMode === "wysiwyg") {
-      setHtmlContent(marked.parse(markdownContent));
-      editor && editor.commands.setContent(marked.parse(markdownContent));
+      // 用tiptap-markdown导入Markdown
+      editor && editor.commands.setContent(markdownContent || "", "markdown");
+      setHtmlContent(editor.getHTML());
     }
     // eslint-disable-next-line
   }, [editMode]);
@@ -145,7 +126,8 @@ export default function EditorPanel({
   // Markdown 编辑器内容变更
   const handleMarkdownChange = (val) => {
     setMarkdownContent(val || "");
-    setHtmlContent(marked.parse(val || ""));
+    editor && editor.commands.setContent(val || "", "markdown");
+    setHtmlContent(editor.getHTML());
   };
 
   // 鼠标移动时判断当前块，吸附菜单

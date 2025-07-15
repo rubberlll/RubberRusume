@@ -33,6 +33,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-split": "^2.0.14",
+    "tiptap-markdown": "^0.8.10",
     "turndown": "^7.2.0"
   },
   "devDependencies": {
