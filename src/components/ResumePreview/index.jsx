@@ -86,21 +86,21 @@ function ResumePreview({ html, iconTheme }) {
         key={key}
         style={{
           display: "flex",
-          gap: 16,
-          margin: "16px 0",
-          flexWrap: "nowrap", // 只一行
+          justifyContent: "space-between", // gap自动均分剩余空间
           alignItems: "flex-start",
-          overflow: "hidden", // 不显示滚动条
+          width: "100%", // 父容器宽度固定
+          margin: "16px 0",
+          overflow: "hidden",
         }}
       >
         {columns.map((item, idx) => (
           <div
             key={idx}
             style={{
-              flex: 1,
-              minWidth: 0,
-              whiteSpace: "pre-line", // 支持内容内部换行
-              wordBreak: "break-all", // 长单词/邮箱等自动断行
+              flex: "0 1 auto", // 宽度自适应内容
+              whiteSpace: "pre-line",
+              wordBreak: "break-all",
+              textAlign: idx === columns.length - 1 ? "right" : "left",
             }}
           >
             {renderWithAntdIcons(item)}
