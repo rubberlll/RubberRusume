@@ -90,3 +90,7 @@
   max-height: 90vh;
   overflow: auto;
 }
+
+.right-preview-scroll-hide.app-preview-outer {
+  background: #444444;
+}
