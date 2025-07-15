@@ -24,6 +24,7 @@ import BlockMenu from "../BlockMenu";
 import TurndownService from "turndown";
 import { marked } from "marked";
 import "./EditorPanel.css";
+import CustomBlock from "./CustomBlock.jsx";
 
 export default function EditorPanel({
   leftWidth,
@@ -62,10 +63,32 @@ export default function EditorPanel({
       Placeholder.configure({
         placeholder: "输入你想插入的内容",
       }),
+      CustomBlock,
     ],
     content: htmlContent,
     onUpdate: ({ editor }) => {
       if (editMode === "wysiwyg") {
+        // 自动将::: start ... ::: end结构转为CustomBlock节点
+        const html = editor.getHTML();
+        const blockRegex = /::: *start([\s\S]*?)::: *end/g;
+        let match;
+        let tr = editor.state.tr;
+        let changed = false;
+        while ((match = blockRegex.exec(html))) {
+          const blockContent = match[1];
+          const columns = blockContent
+            .split(/:::/g)
+            .map((s) => s.trim())
+            .filter(Boolean);
+          // 插入CustomBlock节点
+          tr = tr.replaceSelectionWith(
+            editor.schema.nodes.customBlock.create({ columns })
+          );
+          changed = true;
+        }
+        if (changed) {
+          editor.view.dispatch(tr);
+        }
         setHtmlContent(editor.getHTML());
         setMarkdownContent(turndownService.turndown(editor.getHTML()));
       }
