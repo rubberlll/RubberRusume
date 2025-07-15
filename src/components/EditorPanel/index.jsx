@@ -202,7 +202,7 @@ export default function EditorPanel({
   }
 
   // 菜单操作
-  const handleAddRow = () => {
+  const handleAddRow = (type) => {
     const pos = menuState.blockPos;
     if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
@@ -210,38 +210,25 @@ export default function EditorPanel({
     }
     const node = editor.state.doc.nodeAt(pos);
     const insertPos = node ? pos + node.nodeSize : pos;
-    editor.chain().focus().insertContentAt(insertPos, "<p></p>").run();
+    const html = type === "br" ? "<p>&nbsp;</p>" : "<p></p>";
+    editor.chain().focus().insertContentAt(insertPos, html).run();
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };
   const handleDelete = () => {
-    const pos = getBlockPosByIdx(menuState.blockIdx);
-    console.log("handleDelete pos", pos);
+    const pos = menuState.blockPos;
     if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
       return;
     }
-    // 优先用 NodeSelection 精确删除块
-    const chain = editor
-      .chain()
-      .focus()
-      .setNodeSelection(pos)
-      .deleteSelection();
-    // fallback: 如果没删掉，再用原有 nodeEl 方式
-    if (!chain.run()) {
-      if (!menuState.nodeEl) {
-        message.error("无法定位当前块，操作失败");
-        return;
-      }
-      const from = getBlockPosByIdx(menuState.blockIdx);
-      if (from == null || from < 0) {
-        message.error("无法定位当前块，操作失败");
-        return;
-      }
-      const node = editor.state.doc.nodeAt(from);
-      const to = from + (node ? node.nodeSize : 1);
-      editor.chain().focus().deleteRange({ from, to }).run();
+    const node = editor.state.doc.nodeAt(pos);
+    if (!node) {
+      message.error("无法定位当前块，操作失败");
+      return;
     }
+    const from = pos;
+    const to = pos + node.nodeSize;
+    editor.chain().focus().deleteRange({ from, to }).run();
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };

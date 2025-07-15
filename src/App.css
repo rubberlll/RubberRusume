@@ -94,31 +94,3 @@
   margin-top: 0;
   text-align: center;
 }
-
-.resume-preview-root {
-  font-family: "思源黑体", Arial, sans-serif;
-  color: #222;
-}
-
-.resume-preview-name {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  letter-spacing: 2px;
-}
-
-.resume-preview-icons {
-  margin-bottom: 16px;
-  color: #666;
-  font-size: 16px;
-}
-
-.resume-preview-hr {
-  border: none;
-  border-top: 1.5px solid #eee;
-  margin: 24px 0;
-}
-
-.resume-preview-content {
-  font-size: 17px;
-}
