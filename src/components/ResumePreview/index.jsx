@@ -1,5 +1,16 @@
 import React from "react";
-import { UserOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  PhoneOutlined,
+  MailOutlined,
+  ProductOutlined,
+  AppstoreOutlined,
+  SmileOutlined,
+  SettingOutlined,
+  HeartOutlined,
+  StarOutlined,
+  HomeOutlined,
+} from "@ant-design/icons";
 import "./index.css";
 
 function generateCustomStyle(styleConfig) {
@@ -24,15 +35,29 @@ function ResumePreview({ html, iconTheme, styleConfig }) {
       "icon:user": <UserOutlined style={{ marginRight: 4 }} />,
       "icon:phone": <PhoneOutlined style={{ marginRight: 4 }} />,
       "icon:email": <MailOutlined style={{ marginRight: 4 }} />,
+      "icon:product": <ProductOutlined style={{ marginRight: 4 }} />,
+      "icon:appstore": <AppstoreOutlined style={{ marginRight: 4 }} />,
+      "icon:smile": <SmileOutlined style={{ marginRight: 4 }} />,
+      "icon:setting": <SettingOutlined style={{ marginRight: 4 }} />,
+      "icon:heart": <HeartOutlined style={{ marginRight: 4 }} />,
+      "icon:star": <StarOutlined style={{ marginRight: 4 }} />,
+      "icon:home": <HomeOutlined style={{ marginRight: 4 }} />,
     },
   };
   // 替换所有 icon:xxx
-  const replaceIcons = (str) =>
-    str.replace(/icon:(user|phone|email)/g, (m) => {
-      const icon = iconMap[iconTheme]?.[m];
-      // 用 span 占位，后续 React 渲染
-      return icon ? `<span data-icon="${m}"></span>` : m;
-    });
+  const replaceIcons = (str) => {
+    console.log("replaceIcons input:", str);
+    const result = str.replace(
+      /icon:(user|phone|email|product|appstore|smile|setting|heart|star|home)/g,
+      (m) => {
+        const icon = iconMap[iconTheme]?.[m];
+        // 用 span 占位，后续 React 渲染
+        return icon ? `<span data-icon="${m}"></span>` : m;
+      }
+    );
+    console.log("replaceIcons output:", result);
+    return result;
+  };
 
   // 解析 ::: start ... ::: end 块，块内每个:::分隔的内容为一列
   function parseCustomBlocks(str) {
@@ -72,23 +97,35 @@ function ResumePreview({ html, iconTheme, styleConfig }) {
   const htmlWithIcons = replaceIcons(html);
   // 解析自定义块
   const parsedParts = parseCustomBlocks(htmlWithIcons);
+  console.log("parsedParts:", parsedParts);
 
   // 渲染带有 antd icon 的 HTML
   function renderWithAntdIcons(htmlStr) {
-    // 用正则找到所有 <span data-icon="icon:xxx"></span>
+    console.log("renderWithAntdIcons called with:", htmlStr);
     const parts = htmlStr.split(
-      /(<span data-icon="icon:(user|phone|email)"><\/span>)/g
+      /(<span[^>]*data-icon=['"]icon:[^'"]+['"][^>]*><\/span>)/g
     );
+    console.log("parts:", parts);
     return parts
-      .filter((part) => part && part.replace(/<[^>]+>/g, "").trim() !== "") // 过滤纯空内容
+      .filter((part) => part !== undefined && part !== null && part !== "")
       .map((part, i) => {
         const match = part.match(
-          /<span data-icon="(icon:(user|phone|email))"><\/span>/
+          /<span[^>]*data-icon=['"](icon:[^'"]+)['"][^>]*><\/span>/
         );
         if (match) {
-          return React.cloneElement(iconMap[iconTheme][match[1]], {
-            key: `icon-${i}`,
-          });
+          const icon = iconMap[iconTheme]?.[match[1]];
+          console.log(
+            "iconTheme:",
+            iconTheme,
+            "match:",
+            match[1],
+            "icon:",
+            icon
+          );
+          if (icon) {
+            return React.cloneElement(icon, { key: `icon-${i}` });
+          }
+          return null;
         }
         return (
           <span key={`txt-${i}`} dangerouslySetInnerHTML={{ __html: part }} />
@@ -106,7 +143,7 @@ function ResumePreview({ html, iconTheme, styleConfig }) {
           justifyContent: "space-between", // gap自动均分剩余空间
           alignItems: "flex-start",
           width: "100%", // 父容器宽度固定
-          margin: "16px 0",
+          margin: "6px 0",
           overflow: "hidden",
         }}
       >

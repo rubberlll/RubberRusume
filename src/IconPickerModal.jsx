@@ -1,5 +1,5 @@
 import React from "react";
-import {  Modal } from "antd";
+import { Modal } from "antd";
 import {
   ProductOutlined,
   AppstoreOutlined,
@@ -49,10 +49,11 @@ export default function IconPickerModal({ open, onClose, onCopy }) {
     >
       <div
         style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 20,
-          justifyContent: "center",
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: 24,
+          justifyItems: "center",
+          alignItems: "center",
           padding: 16,
         }}
       >
@@ -61,9 +62,13 @@ export default function IconPickerModal({ open, onClose, onCopy }) {
             key={item.key}
             style={{
               cursor: "pointer",
-              padding: 8,
+              padding: 12,
               borderRadius: 8,
               transition: "background 0.2s",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              minWidth: 64,
             }}
             onClick={() => handleCopy(item.key)}
             onMouseOver={(e) => (e.currentTarget.style.background = "#f5f5f5")}
