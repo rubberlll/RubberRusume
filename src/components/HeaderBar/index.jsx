@@ -12,7 +12,7 @@ import "./index.css";
 const { Header } = Layout;
 
 export default function HeaderBar() {
-  const [title, setTitle] = useState("我的简历 -dDxCtA");
+  const [title, setTitle] = useState("我的简历");
 
   // 导出PDF方法（使用 html-to-image 渲染为图片后插入 jsPDF 导出 PDF）
   const handleExportPDF = async () => {

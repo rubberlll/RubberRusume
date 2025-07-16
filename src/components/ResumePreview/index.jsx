@@ -46,7 +46,6 @@ function ResumePreview({ html, iconTheme, styleConfig }) {
   };
   // 替换所有 icon:xxx
   const replaceIcons = (str) => {
-    console.log("replaceIcons input:", str);
     const result = str.replace(
       /icon:(user|phone|email|product|appstore|smile|setting|heart|star|home)/g,
       (m) => {
@@ -55,7 +54,7 @@ function ResumePreview({ html, iconTheme, styleConfig }) {
         return icon ? `<span data-icon="${m}"></span>` : m;
       }
     );
-    console.log("replaceIcons output:", result);
+
     return result;
   };
 
@@ -97,15 +96,13 @@ function ResumePreview({ html, iconTheme, styleConfig }) {
   const htmlWithIcons = replaceIcons(html);
   // 解析自定义块
   const parsedParts = parseCustomBlocks(htmlWithIcons);
-  console.log("parsedParts:", parsedParts);
 
   // 渲染带有 antd icon 的 HTML
   function renderWithAntdIcons(htmlStr) {
-    console.log("renderWithAntdIcons called with:", htmlStr);
     const parts = htmlStr.split(
       /(<span[^>]*data-icon=['"]icon:[^'"]+['"][^>]*><\/span>)/g
     );
-    console.log("parts:", parts);
+
     return parts
       .filter((part) => part !== undefined && part !== null && part !== "")
       .map((part, i) => {
@@ -114,14 +111,7 @@ function ResumePreview({ html, iconTheme, styleConfig }) {
         );
         if (match) {
           const icon = iconMap[iconTheme]?.[match[1]];
-          console.log(
-            "iconTheme:",
-            iconTheme,
-            "match:",
-            match[1],
-            "icon:",
-            icon
-          );
+
           if (icon) {
             return React.cloneElement(icon, { key: `icon-${i}` });
           }

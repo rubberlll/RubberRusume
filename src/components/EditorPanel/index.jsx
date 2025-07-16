@@ -298,60 +298,44 @@ export default function EditorPanel({
     >
       {/* 顶部按钮区 */}
       <div className="editor-panel-toolbar">
-        <Space>
-          <Tooltip title="选择图标" placement="bottom">
-            <Button
-              icon={<ProductOutlined />}
-              shape="circle"
-              className="editor-panel-toolbar-btn"
-              onClick={() => setIconPickerOpen(true)}
-            />
-          </Tooltip>
-          <Tooltip title="样式设置" placement="bottom">
-            <Button
-              icon={<SettingOutlined />}
-              shape="circle"
-              className="editor-panel-toolbar-btn"
-              onClick={() => setFontPanelOpen(true)}
-            />
-          </Tooltip>
-          <Tooltip title="撤销" placement="bottom">
-            <Button
-              icon={<UndoOutlined />}
-              onClick={() => editor && editor.chain().focus().undo().run()}
-              disabled={!editor?.can().undo()}
-              shape="circle"
-              className="editor-panel-toolbar-btn"
-            />
-          </Tooltip>
-          <Tooltip title="回退" placement="bottom">
-            <Button
-              icon={<RedoOutlined />}
-              onClick={() => editor && editor.chain().focus().redo().run()}
-              disabled={!editor?.can().redo()}
-              shape="circle"
-              className="editor-panel-toolbar-btn"
-            />
-          </Tooltip>
-        </Space>
-        <Space>
-          <Tooltip
-            title={
-              editMode === "wysiwyg" ? "切换为源码模式" : "切换为所见即所得"
-            }
-            placement="bottom"
-          >
-            <Button
-              onClick={() =>
-                setEditMode(editMode === "wysiwyg" ? "code" : "wysiwyg")
-              }
-              shape="round"
-              className="editor-panel-toolbar-btn"
-            >
-              {editMode === "wysiwyg" ? "源码模式" : "所见即所得"}
-            </Button>
-          </Tooltip>
-        </Space>
+        {editMode === "wysiwyg" && (
+          <Space>
+            <Tooltip title="选择图标" placement="bottom">
+              <Button
+                icon={<ProductOutlined />}
+                shape="circle"
+                className="editor-panel-toolbar-btn"
+                onClick={() => setIconPickerOpen(true)}
+              />
+            </Tooltip>
+            <Tooltip title="样式设置" placement="bottom">
+              <Button
+                icon={<SettingOutlined />}
+                shape="circle"
+                className="editor-panel-toolbar-btn"
+                onClick={() => setFontPanelOpen(true)}
+              />
+            </Tooltip>
+            <Tooltip title="撤销" placement="bottom">
+              <Button
+                icon={<UndoOutlined />}
+                onClick={() => editor && editor.chain().focus().undo().run()}
+                disabled={!editor?.can().undo()}
+                shape="circle"
+                className="editor-panel-toolbar-btn"
+              />
+            </Tooltip>
+            <Tooltip title="回退" placement="bottom">
+              <Button
+                icon={<RedoOutlined />}
+                onClick={() => editor && editor.chain().focus().redo().run()}
+                disabled={!editor?.can().redo()}
+                shape="circle"
+                className="editor-panel-toolbar-btn"
+              />
+            </Tooltip>
+          </Space>
+        )}
         <IconPickerModal
           open={iconPickerOpen}
           onClose={() => setIconPickerOpen(false)}
@@ -363,6 +347,25 @@ export default function EditorPanel({
             }
           }}
         />
+      </div>
+
+      {/* 模式切换按钮悬浮在右上角 */}
+      <div className="editor-panel-mode-switch">
+        <Tooltip
+          title={editMode === "wysiwyg" ? "切换为源码模式" : "切换为所见即所得"}
+          placement="top"
+        >
+          <Button
+            onClick={() =>
+              setEditMode(editMode === "wysiwyg" ? "code" : "wysiwyg")
+            }
+            shape="round"
+            className="editor-panel-mode-btn"
+            size="small"
+          >
+            {editMode === "wysiwyg" ? "所见即所得模式" : "源码模式"}
+          </Button>
+        </Tooltip>
       </div>
 
       {editMode === "wysiwyg" ? (

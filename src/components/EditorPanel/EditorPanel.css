@@ -9,6 +9,7 @@
 }
 
 .editor-panel-toolbar {
+  min-height: 32px;
   display: flex;
   align-items: center;
   margin-bottom: 16px;
@@ -61,4 +62,53 @@
   user-select: none;
   font-size: 15px;
   line-height: 1.7;
+}
+
+/* 去除 antd 按钮点击波纹和聚焦黑圈 */
+.ant-btn:focus,
+.ant-btn:active,
+.ant-btn:focus-visible {
+  box-shadow: none;
+  outline: none;
+}
+
+.ant-btn .ant-wave {
+  display: none;
+}
+
+.editor-panel-toolbar-btn:focus,
+.editor-panel-toolbar-btn:active {
+  box-shadow: none;
+  outline: none;
+}
+
+.editor-panel-mode-switch {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 20;
+  background: #fff7e6;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.editor-panel-mode-btn {
+  background: transparent;
+  border: none;
+  color: #fa8c16;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.editor-panel-mode-btn:hover {
+  background: #f2b84e;
+  color: #d46b08;
 }
