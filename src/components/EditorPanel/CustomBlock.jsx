@@ -1,42 +1,29 @@
 import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer } from "@tiptap/react";
+import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
 import React from "react";
+import { marked } from "marked";
 
 // React渲染组件
 const CustomBlockView = (props) => {
   const { node, selected } = props;
   const columns = node.attrs.columns || [];
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: 8,
-        margin: "8px 0",
-        alignItems: "stretch",
-      }}
+    <NodeViewWrapper
+      className="flex-layout"
       contentEditable={false}
       data-type="custom-block"
     >
       {columns.map((col, i) => (
         <div
           key={i}
+          className="flex-layout-item"
           style={{
-            background: "#f5f6fa",
-            borderRadius: 8,
-            padding: "8px 16px",
-            fontSize: 16,
-            color: "#222",
-            fontWeight: 500,
-            minWidth: 60,
-            textAlign: i === columns.length - 1 ? "right" : "left",
-            border: selected ? "2px solid #fa8c16" : "none",
-            transition: "border 0.2s",
-            whiteSpace: "pre-line",
+            border: selected ? "2px solid #fa8c16" : "2px solid #fa8c16",
           }}
-          dangerouslySetInnerHTML={{ __html: col }}
+          dangerouslySetInnerHTML={{ __html: marked.parse(col) }}
         />
       ))}
-    </div>
+    </NodeViewWrapper>
   );
 };
 
