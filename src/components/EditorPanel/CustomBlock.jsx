@@ -61,7 +61,15 @@ const CustomBlock = Node.create({
     };
   },
   parseHTML() {
+    console.log("---");
     return [
+      {
+        tag: "custom-block",
+        getAttrs: (el) => {
+          const cols = el.getAttribute("data-cols");
+          return { columns: cols ? JSON.parse(cols) : [] };
+        },
+      },
       {
         tag: 'div[data-type="custom-block"]',
       },
@@ -71,7 +79,6 @@ const CustomBlock = Node.create({
     return [
       "div",
       mergeAttributes(HTMLAttributes, { "data-type": "custom-block" }),
-      0,
     ];
   },
   addNodeView() {

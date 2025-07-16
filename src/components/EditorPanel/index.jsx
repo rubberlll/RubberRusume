@@ -67,9 +67,10 @@ export default function EditorPanel({
     content: htmlContent,
     onUpdate: ({ editor }) => {
       if (editMode === "wysiwyg") {
-        setHtmlContent(editor.getHTML());
-        // 用tiptap-markdown导出Markdown
-        setMarkdownContent(editor.storage.markdown.getMarkdown());
+        setTimeout(() => {
+          setHtmlContent(editor.getHTML());
+          setMarkdownContent(editor.storage.markdown.getMarkdown());
+        }, 0);
       }
     },
   });
@@ -77,12 +78,32 @@ export default function EditorPanel({
   // 切换模式时内容互转
   useEffect(() => {
     if (editMode === "code") {
-      // 只用Markdown内容
       setMarkdownContent(editor?.storage?.markdown?.getMarkdown?.() || "");
     } else if (editMode === "wysiwyg") {
-      // 用tiptap-markdown导入Markdown
-      editor && editor.commands.setContent(markdownContent || "", "markdown");
-      setHtmlContent(editor.getHTML());
+      // 1. 先处理 markdownContent，把 ::: start ... ::: end 结构转为 customBlock
+      let content = markdownContent || "";
+      // 匹配 ::: start ... ::: end 之间的内容
+      const blockReg = /::: start\s*([\s\S]*?)::: end/g;
+      content = content.replace(blockReg, (match, blockContent) => {
+        // 拆分每个 ::: ... ::: 块
+        const columns = [];
+        const colReg = /:::\s*([\s\S]*?)(?=(:::\s|$))/g;
+        let m;
+        while ((m = colReg.exec(blockContent)) !== null) {
+          columns.push(m[1].trim());
+        }
+        // 用 div 标签，兼容性更好
+        return `<div data-type="custom-block" data-cols='${JSON.stringify(
+          columns
+        )}'></div>`;
+      });
+      console.log(content);
+      // 2. 用 setContent 支持 HTML 方式插入
+      if (editor) {
+        editor.commands.setContent(content, "html");
+        setHtmlContent(editor.getHTML());
+        console.log(editor.getHTML());
+      }
     }
     // eslint-disable-next-line
   }, [editMode]);
