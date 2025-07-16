@@ -15,6 +15,9 @@ import ResumePreview from "./components/ResumePreview";
 import FontStyleConfigPanel from "./components/FontStyleConfigPanel";
 import HeaderBar from "./components/HeaderBar";
 import { ConfigProvider } from "antd";
+import { message } from "antd";
+import { App as AntdApp } from "antd";
+message.config({ getContainer: () => document.body });
 
 function App() {
   const initialHTML = `
@@ -90,6 +93,12 @@ function App() {
   const [styleConfig, setStyleConfig] = useState(defaultStyleConfig);
   const [fontPanelOpen, setFontPanelOpen] = useState(false);
 
+  // 保存简历内容到 localStorage
+  const handleSave = () => {
+    localStorage.setItem("resume_html", htmlContent);
+    localStorage.setItem("resume_markdown", markdownContent);
+  };
+
   return (
     <ConfigProvider
       theme={{
@@ -100,58 +109,60 @@ function App() {
         },
       }}
     >
-      <div className="app-root">
-        <HeaderBar />
-        {/* 左侧编辑器（可拖拽宽度） */}
-        <EditorPanel
-          leftWidth={leftWidth}
-          dragging={dragging}
-          editMode={editMode}
-          setEditMode={setEditMode}
-          htmlContent={htmlContent}
-          setHtmlContent={setHtmlContent}
-          markdownContent={markdownContent}
-          setMarkdownContent={setMarkdownContent}
-          menuState={menuState}
-          setMenuState={setMenuState}
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-          iconPickerOpen={iconPickerOpen}
-          setIconPickerOpen={setIconPickerOpen}
-          onMouseDown={onMouseDown}
-          setFontPanelOpen={setFontPanelOpen}
-        />
-        <div
-          className="app-divider"
-          style={{
-            width: 8,
-            cursor: "col-resize",
-            background: dragging.current ? "#e0e0e0" : "#f3f4f6",
-            zIndex: 10,
-            transition: "background 0.2s",
-          }}
-          onMouseDown={onMouseDown}
-        />
-        {/* 右侧预览区 */}
-        <div className="right-preview-scroll-hide app-preview-outer">
-          <div className="right-preview-scroll-hide app-preview-inner">
-            <ResumePreview
-              html={htmlContent}
-              iconTheme={iconTheme}
-              styleConfig={styleConfig}
-            />
-            <FontStyleConfigPanel
-              open={fontPanelOpen}
-              value={styleConfig}
-              onOk={(cfg) => {
-                setStyleConfig(cfg);
-                setFontPanelOpen(false);
-              }}
-              onCancel={() => setFontPanelOpen(false)}
-            />
+      <AntdApp>
+        <div className="app-root">
+          <HeaderBar onSave={handleSave} />
+          {/* 左侧编辑器（可拖拽宽度） */}
+          <EditorPanel
+            leftWidth={leftWidth}
+            dragging={dragging}
+            editMode={editMode}
+            setEditMode={setEditMode}
+            htmlContent={htmlContent}
+            setHtmlContent={setHtmlContent}
+            markdownContent={markdownContent}
+            setMarkdownContent={setMarkdownContent}
+            menuState={menuState}
+            setMenuState={setMenuState}
+            menuOpen={menuOpen}
+            setMenuOpen={setMenuOpen}
+            iconPickerOpen={iconPickerOpen}
+            setIconPickerOpen={setIconPickerOpen}
+            onMouseDown={onMouseDown}
+            setFontPanelOpen={setFontPanelOpen}
+          />
+          <div
+            className="app-divider"
+            style={{
+              width: 8,
+              cursor: "col-resize",
+              background: dragging.current ? "#e0e0e0" : "#f3f4f6",
+              zIndex: 10,
+              transition: "background 0.2s",
+            }}
+            onMouseDown={onMouseDown}
+          />
+          {/* 右侧预览区 */}
+          <div className="right-preview-scroll-hide app-preview-outer">
+            <div className="right-preview-scroll-hide app-preview-inner">
+              <ResumePreview
+                html={htmlContent}
+                iconTheme={iconTheme}
+                styleConfig={styleConfig}
+              />
+              <FontStyleConfigPanel
+                open={fontPanelOpen}
+                value={styleConfig}
+                onOk={(cfg) => {
+                  setStyleConfig(cfg);
+                  setFontPanelOpen(false);
+                }}
+                onCancel={() => setFontPanelOpen(false)}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </AntdApp>
     </ConfigProvider>
   );
 }
