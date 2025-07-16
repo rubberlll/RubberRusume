@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layout, Menu, Button, Tooltip, Input, message } from "antd";
+import { Layout, Menu, Button, Tooltip, Input, message, Dropdown } from "antd";
 import {
   LeftOutlined,
   QuestionCircleOutlined,
@@ -11,7 +11,59 @@ import "./index.css";
 
 const { Header } = Layout;
 
-export default function HeaderBar({ onSave }) {
+// 新增：文件菜单下拉组件
+function FileMenuDropdown({ onImportMd, onExportMd }) {
+  const inputRef = React.useRef();
+
+  // 处理文件选择
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = evt.target.result;
+      onImportMd && onImportMd(text);
+    };
+    reader.readAsText(file);
+    e.target.value = ""; // 允许重复选择同一文件
+  };
+
+  return (
+    <Dropdown
+      trigger={["hover"]}
+      overlay={
+        <div className="file-menu-dropdown-overlay">
+          <div
+            className="file-menu-dropdown-item"
+            onClick={() => {
+              if (inputRef.current) inputRef.current.click();
+            }}
+          >
+            导入md
+            <input
+              ref={inputRef}
+              type="file"
+              accept=".md,text/markdown"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </div>
+          <div className="file-menu-dropdown-item" onClick={onExportMd}>
+            导出md
+          </div>
+        </div>
+      }
+      placement="bottomLeft"
+      arrow
+    >
+      <Menu.Item key="file" style={{ position: "relative", zIndex: 20 }}>
+        文件
+      </Menu.Item>
+    </Dropdown>
+  );
+}
+
+export default function HeaderBar({ onSave, onImportMd, onExportMd }) {
   const [title, setTitle] = useState("我的简历");
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -89,8 +141,8 @@ export default function HeaderBar({ onSave }) {
             selectable={false}
             className="header-bar-menu-group"
           >
-            <Menu.Item key="file">文件</Menu.Item>
-            <Menu.Item key="edit">编辑模式</Menu.Item>
+            <FileMenuDropdown onImportMd={onImportMd} onExportMd={onExportMd} />
+            <Menu.Item key="edit">切换模式</Menu.Item>
             <Menu.Item key="theme">选择主题</Menu.Item>
             <Menu.Item key="plugin">插件列表</Menu.Item>
             <Menu.Item key="icon">图标列表</Menu.Item>

@@ -144,7 +144,28 @@ function App() {
     >
       <AntdApp>
         <div className="app-root">
-          <HeaderBar onSave={handleSave} />
+          <HeaderBar
+            onSave={handleSave}
+            onImportMd={(md) => {
+              setEditMode("code");
+              setMarkdownContent(md);
+            }}
+            onExportMd={() => {
+              const blob = new Blob([markdownContent], {
+                type: "text/markdown",
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "resume.md";
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              }, 100);
+            }}
+          />
           {/* 左侧编辑器（可拖拽宽度） */}
           <EditorPanel
             leftWidth={leftWidth}

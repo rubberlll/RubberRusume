@@ -120,3 +120,20 @@
   border-bottom: none !important;
   box-shadow: none !important;
 }
+.file-menu-dropdown-overlay {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  min-width: 90px;
+}
+.file-menu-dropdown-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #222;
+  transition: color 0.2s;
+}
+.file-menu-dropdown-item:hover {
+  color: #ff7a00;
+}
