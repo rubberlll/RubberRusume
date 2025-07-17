@@ -272,17 +272,19 @@ export default function EditorPanel({
   };
   const handleLayout = (cols) => {
     const pos = getBlockPosByIdx(menuState.blockIdx);
-    console.log(pos);
-    console.log("handleLayout pos", pos);
     if (!editor || pos == null || pos < 0) {
       message.error("无法定位当前块，操作失败");
       return;
     }
-    let html =
-      cols === 2
-        ? '<div style="display:flex;gap:16px"><div style="flex:1">左列</div><div style="flex:1">右列</div></div>'
-        : '<div style="display:flex;gap:16px"><div style="flex:1">列1</div><div style="flex:1">列2</div><div style="flex:1">列3</div></div>';
-    editor.chain().focus().insertContentAt(pos, html).run();
+    let layoutStr = "";
+    if (cols === 2) {
+      layoutStr = "::: start 左\n::: 右\n::: end\n";
+    } else {
+      layoutStr = "::: start 列1\n::: 列2\n::: 列3\n::: end\n";
+    }
+    const node = editor.state.doc.nodeAt(pos);
+    const insertPos = node ? pos + node.nodeSize : pos;
+    editor.chain().focus().insertContentAt(insertPos, layoutStr).run();
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };
