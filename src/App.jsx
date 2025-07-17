@@ -127,11 +127,21 @@ function App() {
   const [styleConfig, setStyleConfig] = useState(defaultStyleConfig);
   const [fontPanelOpen, setFontPanelOpen] = useState(false);
   const [themeColor, setThemeColor] = useState("#222"); // 默认黑色
+  const [images, setImages] = useState([]); // [{url, x, y}]
 
   // 保存简历内容到 localStorage
   const handleSave = () => {
     localStorage.setItem("resume_html", htmlContent);
     localStorage.setItem("resume_markdown", markdownContent);
+  };
+
+  // 图片上传处理
+  const handleUploadImage = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImages((imgs) => [...imgs, { url: e.target.result, x: 100, y: 100 }]);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -169,6 +179,7 @@ function App() {
             }}
             themeColor={themeColor}
             setThemeColor={setThemeColor}
+            onUploadImage={handleUploadImage}
           />
           {/* 左侧编辑器（可拖拽宽度） */}
           <EditorPanel
@@ -208,6 +219,8 @@ function App() {
                 iconTheme={iconTheme}
                 styleConfig={styleConfig}
                 themeColor={themeColor}
+                images={images}
+                setImages={setImages}
               />
               <FontStyleConfigPanel
                 open={fontPanelOpen}

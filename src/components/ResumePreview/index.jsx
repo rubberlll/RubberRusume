@@ -144,7 +144,14 @@ function generateCustomStyle(styleConfig, themeColor) {
   return css;
 }
 
-function ResumePreview({ html, iconTheme, styleConfig, themeColor }) {
+function ResumePreview({
+  html,
+  iconTheme,
+  styleConfig,
+  themeColor,
+  images = [],
+  setImages,
+}) {
   // iconTheme: 'antd'（目前只支持 antd，可扩展）
   const iconMap = {
     antd: {
@@ -375,9 +382,200 @@ function ResumePreview({ html, iconTheme, styleConfig, themeColor }) {
     );
   }
 
+  // 拖动图片相关
+  const dragImgRef = React.useRef(null);
+  const dragStart = React.useRef({
+    x: 0,
+    y: 0,
+    idx: -1,
+    offsetX: 0,
+    offsetY: 0,
+  });
+  const resizeImgRef = React.useRef(null);
+  const resizeStart = React.useRef({
+    x: 0,
+    y: 0,
+    idx: -1,
+    startW: 120,
+    startH: 120,
+  });
+
+  const handleImgMouseDown = (e, idx) => {
+    e.preventDefault();
+    dragImgRef.current = idx;
+    dragStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      idx,
+      offsetX: images[idx].x,
+      offsetY: images[idx].y,
+    };
+    window.addEventListener("mousemove", handleImgMouseMove);
+    window.addEventListener("mouseup", handleImgMouseUp);
+  };
+  const handleImgMouseMove = (e) => {
+    const { idx, x, y, offsetX, offsetY } = dragStart.current;
+    if (idx === -1) return;
+    const dx = e.clientX - x;
+    const dy = e.clientY - y;
+    setImages((imgs) => {
+      const arr = [...imgs];
+      arr[idx] = { ...arr[idx], x: offsetX + dx, y: offsetY + dy };
+      return arr;
+    });
+  };
+  const handleImgMouseUp = () => {
+    dragImgRef.current = null;
+    dragStart.current.idx = -1;
+    window.removeEventListener("mousemove", handleImgMouseMove);
+    window.removeEventListener("mouseup", handleImgMouseUp);
+  };
+
+  // 缩放图片相关
+  const handleResizeMouseDown = (e, idx) => {
+    e.stopPropagation();
+    e.preventDefault();
+    resizeImgRef.current = idx;
+    resizeStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      idx,
+      startW: images[idx].width || 120,
+      startH: images[idx].height || 120,
+    };
+    window.addEventListener("mousemove", handleResizeMouseMove);
+    window.addEventListener("mouseup", handleResizeMouseUp);
+  };
+  const handleResizeMouseMove = (e) => {
+    const { idx, x, y, startW, startH } = resizeStart.current;
+    if (idx === -1) return;
+    const dw = e.clientX - x;
+    const dh = e.clientY - y;
+    setImages((imgs) => {
+      const arr = [...imgs];
+      let newW = Math.max(40, startW + dw);
+      let newH = Math.max(40, startH + dh);
+      arr[idx] = { ...arr[idx], width: newW, height: newH };
+      return arr;
+    });
+  };
+  const handleResizeMouseUp = () => {
+    resizeImgRef.current = null;
+    resizeStart.current.idx = -1;
+    window.removeEventListener("mousemove", handleResizeMouseMove);
+    window.removeEventListener("mouseup", handleResizeMouseUp);
+  };
+
+  // 删除图片
+  const handleDeleteImg = (idx) => {
+    setImages((imgs) => imgs.filter((_, i) => i !== idx));
+  };
+
+  const [activeImgIdx, setActiveImgIdx] = React.useState(-1);
+
+  // 点击空白处取消激活
+  React.useEffect(() => {
+    const handleClick = (e) => {
+      if (!e.target.closest(".resume-draggable-img")) {
+        setActiveImgIdx(-1);
+      }
+    };
+    window.addEventListener("mousedown", handleClick);
+    return () => window.removeEventListener("mousedown", handleClick);
+  }, []);
+
   return (
-    <div className="resume-preview-root">
+    <div className="resume-preview-root" style={{ position: "relative" }}>
       <style>{generateCustomStyle(styleConfig, themeColor)}</style>
+      {/* 可拖动图片层 */}
+      {images.map((img, idx) => (
+        <div
+          key={idx}
+          className="resume-draggable-img"
+          style={{
+            position: "absolute",
+            left: img.x,
+            top: img.y,
+            width: img.width || 120,
+            height: img.height || 120,
+            zIndex: 10,
+            userSelect: "none",
+          }}
+          onMouseDown={() => setActiveImgIdx(idx)}
+        >
+          {/* 删除按钮，仅激活时显示 */}
+          {activeImgIdx === idx && (
+            <div
+              style={{
+                position: "absolute",
+                right: 2,
+                top: 2,
+                width: 20,
+                height: 20,
+                background: "transparent",
+                color: "black",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                zIndex: 2,
+                fontSize: 14,
+                border: "1.5px solid #fff",
+              }}
+              onClick={() => handleDeleteImg(idx)}
+              title="删除图片"
+            >
+              ×
+            </div>
+          )}
+          {/* 图片本体 */}
+          <img
+            src={img.url}
+            alt=""
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: 8,
+
+              cursor: "move",
+              userSelect: "none",
+              pointerEvents: "auto",
+            }}
+            draggable={false}
+            onMouseDown={(e) => handleImgMouseDown(e, idx)}
+          />
+          {/* 缩放角，仅激活时显示 */}
+          {activeImgIdx === idx && (
+            <div
+              style={{
+                position: "absolute",
+                right: 0,
+                bottom: 0,
+                width: 16,
+                height: 16,
+                background: "transparent",
+
+                borderRadius: 4,
+                cursor: "nwse-resize",
+                zIndex: 3,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onMouseDown={(e) => handleResizeMouseDown(e, idx)}
+              title="缩放图片"
+            >
+              <svg width="10" height="10">
+                <polyline
+                  points="0,10 10,10 10,0"
+                  style={{ fill: "none", stroke: "#888", strokeWidth: 2 }}
+                />
+              </svg>
+            </div>
+          )}
+        </div>
+      ))}
       <div className="resume-preview-content">
         {parsedParts.map((part, i) =>
           part.type === "block"

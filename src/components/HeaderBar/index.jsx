@@ -9,6 +9,7 @@ import {
   Dropdown,
   ColorPicker,
   Popover,
+  Upload,
 } from "antd";
 import {
   LeftOutlined,
@@ -80,9 +81,11 @@ export default function HeaderBar({
   onExportMd,
   themeColor,
   setThemeColor,
+  onUploadImage,
 }) {
   const [title, setTitle] = useState("我的简历");
   const [messageApi, contextHolder] = message.useMessage();
+  const imageInputRef = React.useRef();
 
   // 导出PDF方法（使用 html-to-image 渲染为图片后插入 jsPDF 导出 PDF）
   const handleExportPDF = async () => {
@@ -116,6 +119,17 @@ export default function HeaderBar({
     } catch (err) {
       console.error("导出PDF失败:", err);
     }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (onUploadImage) {
+      onUploadImage(file);
+    } else {
+      console.log("上传图片文件:", file);
+    }
+    e.target.value = "";
   };
 
   return (
@@ -159,7 +173,6 @@ export default function HeaderBar({
             className="header-bar-menu-group"
           >
             <FileMenuDropdown onImportMd={onImportMd} onExportMd={onExportMd} />
-
             <Menu.Item key="theme">
               <Popover
                 content={
@@ -173,6 +186,31 @@ export default function HeaderBar({
                 trigger="hover"
               >
                 <span>选择主题</span>
+              </Popover>
+            </Menu.Item>
+            <Menu.Item key="upload-image">
+              <Popover
+                content={
+                  <Upload.Dragger
+                    name="image"
+                    accept="image/*"
+                    showUploadList={false}
+                    customRequest={({ file }) => {
+                      if (onUploadImage) {
+                        onUploadImage(file);
+                      } else {
+                        console.log("上传图片文件:", file);
+                      }
+                    }}
+                    style={{ width: 260 }}
+                  >
+                    <p style={{ margin: 8 }}>拖拽图片到此处，或点击上传</p>
+                  </Upload.Dragger>
+                }
+                title="上传图片"
+                trigger="hover"
+              >
+                <span>上传图片</span>
               </Popover>
             </Menu.Item>
           </Menu>
