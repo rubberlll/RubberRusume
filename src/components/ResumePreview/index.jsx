@@ -10,10 +10,122 @@ import {
   HeartOutlined,
   StarOutlined,
   HomeOutlined,
+  IdcardOutlined,
+  TeamOutlined,
+  SolutionOutlined,
+  ProfileOutlined,
+  ProjectOutlined,
+  AuditOutlined,
+  TrophyOutlined,
+  BankOutlined,
+  ShopOutlined,
+  WalletOutlined,
+  CalendarOutlined,
+  ScheduleOutlined,
+  FileTextOutlined,
+  FilePdfOutlined,
+  FileWordOutlined,
+  FileExcelOutlined,
+  FileAddOutlined,
+  FileDoneOutlined,
+  FileSearchOutlined,
+  FileProtectOutlined,
+  FileUnknownOutlined,
+  FileZipOutlined,
+  FileImageOutlined,
+  FilePptOutlined,
+  FileMarkdownOutlined,
+  ReadOutlined,
+  BookOutlined,
+  ContactsOutlined,
+  MessageOutlined,
+  NotificationOutlined,
+  BellOutlined,
+  LikeOutlined,
+  DislikeOutlined,
+  CommentOutlined,
+  EditOutlined,
+  FormOutlined,
+  CopyOutlined,
+  ScissorOutlined,
+  DeleteOutlined,
+  HighlightOutlined,
+  AlignCenterOutlined,
+  AlignLeftOutlined,
+  AlignRightOutlined,
+  BoldOutlined,
+  ItalicOutlined,
+  UnderlineOutlined,
+  StrikethroughOutlined,
+  RedoOutlined,
+  UndoOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined,
+  SearchOutlined,
+  LockOutlined,
+  UnlockOutlined,
+  KeyOutlined,
+  SafetyOutlined,
+  SecurityScanOutlined,
+  SettingTwoTone,
+  UserAddOutlined,
+  UserDeleteOutlined,
+  UserSwitchOutlined,
+  UsergroupAddOutlined,
+  UsergroupDeleteOutlined,
+  ManOutlined,
+  WomanOutlined,
+  GlobalOutlined,
+  CloudOutlined,
+  CloudUploadOutlined,
+  CloudDownloadOutlined,
+  CloudSyncOutlined,
+  CloudServerOutlined,
+  ClusterOutlined,
+  ApartmentOutlined,
+  CrownOutlined,
+  RocketOutlined,
+  ThunderboltOutlined,
+  ToolOutlined,
+  BuildOutlined,
+  CalculatorOutlined,
+  FundOutlined,
+  PieChartOutlined,
+  BarChartOutlined,
+  AreaChartOutlined,
+  LineChartOutlined,
+  RadarChartOutlined,
+  HeatMapOutlined,
+  StockOutlined,
+  RiseOutlined,
+  FallOutlined,
+  BoxPlotOutlined,
+  SlidersOutlined,
+  DashboardOutlined,
+  DatabaseOutlined,
+  EnvironmentOutlined,
+  ExperimentOutlined,
+  FireOutlined,
+  GiftOutlined,
+  GoldOutlined,
+  HourglassOutlined,
+  InsuranceOutlined,
+  LayoutOutlined,
+  LikeFilled,
+  LikeTwoTone,
+  MehOutlined,
+  MehFilled,
+  MehTwoTone,
+  SmileFilled,
+  SmileTwoTone,
+  StarFilled,
+  StarTwoTone,
+  TrophyFilled,
+  TrophyTwoTone,
 } from "@ant-design/icons";
 import "./index.css";
 
-function generateCustomStyle(styleConfig) {
+function generateCustomStyle(styleConfig, themeColor) {
   let css = "";
   if (!styleConfig) return css;
   Object.entries(styleConfig).forEach(([tag, conf]) => {
@@ -22,40 +134,149 @@ function generateCustomStyle(styleConfig) {
     }px !important; margin-top: ${
       conf.marginTop
     }px !important; margin-bottom: ${conf.marginBottom}px !important;${
-      tag === "h1" || tag === "h2" ? " color: #222; font-weight: bold;" : ""
+      tag === "h2" ? ` color: ${themeColor}; font-weight: bold;` : ""
     } }`;
   });
+  // h2下边框色
+  if (themeColor) {
+    css += `\n.resume-preview-content h2 { border-bottom: 2px solid ${themeColor} !important; }`;
+  }
   return css;
 }
 
-function ResumePreview({ html, iconTheme, styleConfig }) {
+function ResumePreview({ html, iconTheme, styleConfig, themeColor }) {
   // iconTheme: 'antd'（目前只支持 antd，可扩展）
   const iconMap = {
     antd: {
       "icon:user": <UserOutlined style={{ marginRight: 4 }} />,
       "icon:phone": <PhoneOutlined style={{ marginRight: 4 }} />,
-      "icon:email": <MailOutlined style={{ marginRight: 4 }} />,
-      "icon:product": <ProductOutlined style={{ marginRight: 4 }} />,
-      "icon:appstore": <AppstoreOutlined style={{ marginRight: 4 }} />,
-      "icon:smile": <SmileOutlined style={{ marginRight: 4 }} />,
+      "icon:mail": <MailOutlined style={{ marginRight: 4 }} />,
+      "icon:idcard": <IdcardOutlined style={{ marginRight: 4 }} />,
+      "icon:team": <TeamOutlined style={{ marginRight: 4 }} />,
+      "icon:solution": <SolutionOutlined style={{ marginRight: 4 }} />,
+      "icon:profile": <ProfileOutlined style={{ marginRight: 4 }} />,
+      "icon:project": <ProjectOutlined style={{ marginRight: 4 }} />,
+      "icon:audit": <AuditOutlined style={{ marginRight: 4 }} />,
+      "icon:trophy": <TrophyOutlined style={{ marginRight: 4 }} />,
+      "icon:bank": <BankOutlined style={{ marginRight: 4 }} />,
+      "icon:shop": <ShopOutlined style={{ marginRight: 4 }} />,
+      "icon:wallet": <WalletOutlined style={{ marginRight: 4 }} />,
+      "icon:calendar": <CalendarOutlined style={{ marginRight: 4 }} />,
+      "icon:schedule": <ScheduleOutlined style={{ marginRight: 4 }} />,
+      "icon:file-text": <FileTextOutlined style={{ marginRight: 4 }} />,
+      "icon:file-pdf": <FilePdfOutlined style={{ marginRight: 4 }} />,
+      "icon:file-word": <FileWordOutlined style={{ marginRight: 4 }} />,
+      "icon:file-excel": <FileExcelOutlined style={{ marginRight: 4 }} />,
+      "icon:file-add": <FileAddOutlined style={{ marginRight: 4 }} />,
+      "icon:file-done": <FileDoneOutlined style={{ marginRight: 4 }} />,
+      "icon:file-search": <FileSearchOutlined style={{ marginRight: 4 }} />,
+      "icon:file-protect": <FileProtectOutlined style={{ marginRight: 4 }} />,
+      "icon:file-unknown": <FileUnknownOutlined style={{ marginRight: 4 }} />,
+      "icon:file-zip": <FileZipOutlined style={{ marginRight: 4 }} />,
+      "icon:file-image": <FileImageOutlined style={{ marginRight: 4 }} />,
+      "icon:file-ppt": <FilePptOutlined style={{ marginRight: 4 }} />,
+      "icon:file-md": <FileMarkdownOutlined style={{ marginRight: 4 }} />,
+      "icon:read": <ReadOutlined style={{ marginRight: 4 }} />,
+      "icon:book": <BookOutlined style={{ marginRight: 4 }} />,
+      "icon:contacts": <ContactsOutlined style={{ marginRight: 4 }} />,
+      "icon:message": <MessageOutlined style={{ marginRight: 4 }} />,
+      "icon:notification": <NotificationOutlined style={{ marginRight: 4 }} />,
+      "icon:bell": <BellOutlined style={{ marginRight: 4 }} />,
+      "icon:like": <LikeOutlined style={{ marginRight: 4 }} />,
+      "icon:dislike": <DislikeOutlined style={{ marginRight: 4 }} />,
+      "icon:comment": <CommentOutlined style={{ marginRight: 4 }} />,
+      "icon:edit": <EditOutlined style={{ marginRight: 4 }} />,
+      "icon:form": <FormOutlined style={{ marginRight: 4 }} />,
+      "icon:copy": <CopyOutlined style={{ marginRight: 4 }} />,
+      "icon:scissor": <ScissorOutlined style={{ marginRight: 4 }} />,
+      "icon:delete": <DeleteOutlined style={{ marginRight: 4 }} />,
+      "icon:highlight": <HighlightOutlined style={{ marginRight: 4 }} />,
+      "icon:align-center": <AlignCenterOutlined style={{ marginRight: 4 }} />,
+      "icon:align-left": <AlignLeftOutlined style={{ marginRight: 4 }} />,
+      "icon:align-right": <AlignRightOutlined style={{ marginRight: 4 }} />,
+      "icon:bold": <BoldOutlined style={{ marginRight: 4 }} />,
+      "icon:italic": <ItalicOutlined style={{ marginRight: 4 }} />,
+      "icon:underline": <UnderlineOutlined style={{ marginRight: 4 }} />,
+      "icon:strikethrough": (
+        <StrikethroughOutlined style={{ marginRight: 4 }} />
+      ),
+      "icon:redo": <RedoOutlined style={{ marginRight: 4 }} />,
+      "icon:undo": <UndoOutlined style={{ marginRight: 4 }} />,
+      "icon:zoom-in": <ZoomInOutlined style={{ marginRight: 4 }} />,
+      "icon:zoom-out": <ZoomOutOutlined style={{ marginRight: 4 }} />,
+      "icon:search": <SearchOutlined style={{ marginRight: 4 }} />,
+      "icon:lock": <LockOutlined style={{ marginRight: 4 }} />,
+      "icon:unlock": <UnlockOutlined style={{ marginRight: 4 }} />,
+      "icon:key": <KeyOutlined style={{ marginRight: 4 }} />,
+      "icon:safety": <SafetyOutlined style={{ marginRight: 4 }} />,
+      "icon:security-scan": <SecurityScanOutlined style={{ marginRight: 4 }} />,
       "icon:setting": <SettingOutlined style={{ marginRight: 4 }} />,
-      "icon:heart": <HeartOutlined style={{ marginRight: 4 }} />,
-      "icon:star": <StarOutlined style={{ marginRight: 4 }} />,
-      "icon:home": <HomeOutlined style={{ marginRight: 4 }} />,
+      "icon:user-add": <UserAddOutlined style={{ marginRight: 4 }} />,
+      "icon:user-delete": <UserDeleteOutlined style={{ marginRight: 4 }} />,
+      "icon:user-switch": <UserSwitchOutlined style={{ marginRight: 4 }} />,
+      "icon:usergroup-add": <UsergroupAddOutlined style={{ marginRight: 4 }} />,
+      "icon:usergroup-delete": (
+        <UsergroupDeleteOutlined style={{ marginRight: 4 }} />
+      ),
+      "icon:man": <ManOutlined style={{ marginRight: 4 }} />,
+      "icon:woman": <WomanOutlined style={{ marginRight: 4 }} />,
+      "icon:global": <GlobalOutlined style={{ marginRight: 4 }} />,
+      "icon:cloud": <CloudOutlined style={{ marginRight: 4 }} />,
+      "icon:cloud-upload": <CloudUploadOutlined style={{ marginRight: 4 }} />,
+      "icon:cloud-download": (
+        <CloudDownloadOutlined style={{ marginRight: 4 }} />
+      ),
+      "icon:cloud-sync": <CloudSyncOutlined style={{ marginRight: 4 }} />,
+      "icon:cloud-server": <CloudServerOutlined style={{ marginRight: 4 }} />,
+      "icon:cluster": <ClusterOutlined style={{ marginRight: 4 }} />,
+      "icon:apartment": <ApartmentOutlined style={{ marginRight: 4 }} />,
+      "icon:crown": <CrownOutlined style={{ marginRight: 4 }} />,
+      "icon:rocket": <RocketOutlined style={{ marginRight: 4 }} />,
+      "icon:thunderbolt": <ThunderboltOutlined style={{ marginRight: 4 }} />,
+      "icon:tool": <ToolOutlined style={{ marginRight: 4 }} />,
+      "icon:build": <BuildOutlined style={{ marginRight: 4 }} />,
+      "icon:calculator": <CalculatorOutlined style={{ marginRight: 4 }} />,
+      "icon:fund": <FundOutlined style={{ marginRight: 4 }} />,
+      "icon:pie-chart": <PieChartOutlined style={{ marginRight: 4 }} />,
+      "icon:bar-chart": <BarChartOutlined style={{ marginRight: 4 }} />,
+      "icon:area-chart": <AreaChartOutlined style={{ marginRight: 4 }} />,
+      "icon:line-chart": <LineChartOutlined style={{ marginRight: 4 }} />,
+      "icon:radar-chart": <RadarChartOutlined style={{ marginRight: 4 }} />,
+      "icon:heat-map": <HeatMapOutlined style={{ marginRight: 4 }} />,
+      "icon:stock": <StockOutlined style={{ marginRight: 4 }} />,
+      "icon:rise": <RiseOutlined style={{ marginRight: 4 }} />,
+      "icon:fall": <FallOutlined style={{ marginRight: 4 }} />,
+      "icon:box-plot": <BoxPlotOutlined style={{ marginRight: 4 }} />,
+      "icon:sliders": <SlidersOutlined style={{ marginRight: 4 }} />,
+      "icon:dashboard": <DashboardOutlined style={{ marginRight: 4 }} />,
+      "icon:database": <DatabaseOutlined style={{ marginRight: 4 }} />,
+      "icon:environment": <EnvironmentOutlined style={{ marginRight: 4 }} />,
+      "icon:experiment": <ExperimentOutlined style={{ marginRight: 4 }} />,
+      "icon:fire": <FireOutlined style={{ marginRight: 4 }} />,
+      "icon:gift": <GiftOutlined style={{ marginRight: 4 }} />,
+      "icon:gold": <GoldOutlined style={{ marginRight: 4 }} />,
+      "icon:hourglass": <HourglassOutlined style={{ marginRight: 4 }} />,
+      "icon:insurance": <InsuranceOutlined style={{ marginRight: 4 }} />,
+      "icon:layout": <LayoutOutlined style={{ marginRight: 4 }} />,
+      "icon:like-filled": <LikeFilled style={{ marginRight: 4 }} />,
+      "icon:like-two-tone": <LikeTwoTone style={{ marginRight: 4 }} />,
+      "icon:meh": <MehOutlined style={{ marginRight: 4 }} />,
+      "icon:meh-filled": <MehFilled style={{ marginRight: 4 }} />,
+      "icon:meh-two-tone": <MehTwoTone style={{ marginRight: 4 }} />,
+      "icon:smile-filled": <SmileFilled style={{ marginRight: 4 }} />,
+      "icon:smile-two-tone": <SmileTwoTone style={{ marginRight: 4 }} />,
+      "icon:star-filled": <StarFilled style={{ marginRight: 4 }} />,
+      "icon:star-two-tone": <StarTwoTone style={{ marginRight: 4 }} />,
+      "icon:trophy-filled": <TrophyFilled style={{ marginRight: 4 }} />,
+      "icon:trophy-two-tone": <TrophyTwoTone style={{ marginRight: 4 }} />,
     },
   };
   // 替换所有 icon:xxx
   const replaceIcons = (str) => {
-    const result = str.replace(
-      /icon:(user|phone|email|product|appstore|smile|setting|heart|star|home)/g,
-      (m) => {
-        const icon = iconMap[iconTheme]?.[m];
-        // 用 span 占位，后续 React 渲染
-        return icon ? `<span data-icon="${m}"></span>` : m;
-      }
-    );
-
-    return result;
+    return str.replace(/icon:[a-zA-Z0-9-]+/g, (m) => {
+      const icon = iconMap[iconTheme]?.[m];
+      return icon ? `<span data-icon="${m}"></span>` : m;
+    });
   };
 
   // 解析 ::: start ... ::: end 块，块内每个:::分隔的内容为一列
@@ -156,7 +377,7 @@ function ResumePreview({ html, iconTheme, styleConfig }) {
 
   return (
     <div className="resume-preview-root">
-      <style>{generateCustomStyle(styleConfig)}</style>
+      <style>{generateCustomStyle(styleConfig, themeColor)}</style>
       <div className="resume-preview-content">
         {parsedParts.map((part, i) =>
           part.type === "block"

@@ -17,6 +17,7 @@ import HeaderBar from "./components/HeaderBar";
 import { ConfigProvider } from "antd";
 import { message } from "antd";
 import { App as AntdApp } from "antd";
+import { ColorPicker } from "antd";
 message.config({ getContainer: () => document.body });
 
 function App() {
@@ -125,6 +126,7 @@ function App() {
   };
   const [styleConfig, setStyleConfig] = useState(defaultStyleConfig);
   const [fontPanelOpen, setFontPanelOpen] = useState(false);
+  const [themeColor, setThemeColor] = useState("#222"); // 默认黑色
 
   // 保存简历内容到 localStorage
   const handleSave = () => {
@@ -165,6 +167,8 @@ function App() {
                 URL.revokeObjectURL(url);
               }, 100);
             }}
+            themeColor={themeColor}
+            setThemeColor={setThemeColor}
           />
           {/* 左侧编辑器（可拖拽宽度） */}
           <EditorPanel
@@ -203,6 +207,7 @@ function App() {
                 html={htmlContent}
                 iconTheme={iconTheme}
                 styleConfig={styleConfig}
+                themeColor={themeColor}
               />
               <FontStyleConfigPanel
                 open={fontPanelOpen}

@@ -32,6 +32,7 @@
     "jspdf": "^3.0.1",
     "marked": "^16.0.0",
     "react": "^19.0.0",
+    "react-color": "^2.19.3",
     "react-dom": "^19.0.0",
     "react-split": "^2.0.14",
     "tiptap-markdown": "^0.8.10",

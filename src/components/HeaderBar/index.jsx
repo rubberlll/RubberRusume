@@ -1,9 +1,20 @@
 import React, { useState } from "react";
-import { Layout, Menu, Button, Tooltip, Input, message, Dropdown } from "antd";
+import {
+  Layout,
+  Menu,
+  Button,
+  Tooltip,
+  Input,
+  message,
+  Dropdown,
+  ColorPicker,
+  Popover,
+} from "antd";
 import {
   LeftOutlined,
   QuestionCircleOutlined,
   HistoryOutlined,
+  GithubOutlined,
 } from "@ant-design/icons";
 import jsPDF from "jspdf";
 import { toPng } from "html-to-image";
@@ -63,7 +74,13 @@ function FileMenuDropdown({ onImportMd, onExportMd }) {
   );
 }
 
-export default function HeaderBar({ onSave, onImportMd, onExportMd }) {
+export default function HeaderBar({
+  onSave,
+  onImportMd,
+  onExportMd,
+  themeColor,
+  setThemeColor,
+}) {
   const [title, setTitle] = useState("我的简历");
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -142,13 +159,43 @@ export default function HeaderBar({ onSave, onImportMd, onExportMd }) {
             className="header-bar-menu-group"
           >
             <FileMenuDropdown onImportMd={onImportMd} onExportMd={onExportMd} />
-            <Menu.Item key="edit">切换模式</Menu.Item>
-            <Menu.Item key="theme">选择主题</Menu.Item>
-            <Menu.Item key="plugin">插件列表</Menu.Item>
-            <Menu.Item key="icon">图标列表</Menu.Item>
+
+            <Menu.Item key="theme">
+              <Popover
+                content={
+                  <ColorPicker
+                    value={themeColor}
+                    onChange={(color) => setThemeColor(color.toHexString())}
+                    showText
+                  />
+                }
+                title="选择主题色"
+                trigger="hover"
+              >
+                <span>选择主题</span>
+              </Popover>
+            </Menu.Item>
           </Menu>
         </div>
         <div className="header-bar-right">
+          <Tooltip title="跳转到GitHub" placement="bottom">
+            <Button
+              className="header-bar-btn"
+              icon={<GithubOutlined style={{ color: "#222" }} />}
+              onClick={() =>
+                window.open(
+                  "https://github.com/rubberlll/RubberRusume",
+                  "_blank"
+                )
+              }
+              style={{
+                marginRight: 8,
+                border: "none",
+                background: "none",
+                boxShadow: "none",
+              }}
+            />
+          </Tooltip>
           <Button
             className="header-bar-btn"
             onClick={() => {
