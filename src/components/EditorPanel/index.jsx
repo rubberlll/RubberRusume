@@ -216,25 +216,40 @@ export default function EditorPanel({
   const handleAddRow = (type) => {
     const pos = menuState.blockPos;
     if (!editor || pos == null || pos < 0) {
-      message.error("无法定位当前块，操作失败");
+      console.error("无法定位当前块，操作失败");
       return;
     }
     const node = editor.state.doc.nodeAt(pos);
-    const insertPos = node ? pos + node.nodeSize : pos;
-    const html = type === "br" ? "<p>&nbsp;</p>" : "<p></p>";
-    editor.chain().focus().insertContentAt(insertPos, html).run();
+    if (!node) return;
+    const insertPos = pos + node.nodeSize;
+    if (type === "br") {
+      editor
+        .chain()
+        .focus()
+        .insertContentAt(insertPos, {
+          type: "paragraph",
+          content: [{ type: "text", text: "\u00A0" }],
+        })
+        .run();
+    } else {
+      editor
+        .chain()
+        .focus()
+        .insertContentAt(insertPos, { type: "paragraph" })
+        .run();
+    }
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
   };
   const handleDelete = () => {
     const pos = menuState.blockPos;
     if (!editor || pos == null || pos < 0) {
-      message.error("无法定位当前块，操作失败");
+      console.error("无法定位当前块，操作失败");
       return;
     }
     const node = editor.state.doc.nodeAt(pos);
     if (!node) {
-      message.error("无法定位当前块，操作失败");
+      console.error("无法定位当前块，操作失败");
       return;
     }
     const from = pos;
