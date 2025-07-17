@@ -247,13 +247,25 @@ export default function EditorPanel({
       console.error("无法定位当前块，操作失败");
       return;
     }
-    const node = editor.state.doc.nodeAt(pos);
-    if (!node) {
-      console.error("无法定位当前块，操作失败");
+    const { state } = editor;
+    const $pos = state.doc.resolve(pos);
+    // 向上查找最近的li/blockquote/codeBlock等父块，否则删除当前块
+    let targetPos = pos;
+    let targetNode = state.doc.nodeAt(pos);
+    for (let depth = $pos.depth; depth > 0; depth--) {
+      const node = $pos.node(depth);
+      if (["listItem", "blockquote", "codeBlock"].includes(node.type.name)) {
+        targetPos = $pos.before(depth);
+        targetNode = node;
+        break;
+      }
+    }
+    if (!targetNode) {
+      console.error("无法定位要删除的块");
       return;
     }
-    const from = pos;
-    const to = pos + node.nodeSize;
+    const from = targetPos;
+    const to = targetPos + targetNode.nodeSize;
     editor.chain().focus().deleteRange({ from, to }).run();
     setMenuOpen(false);
     setMenuState((m) => ({ ...m, show: false }));
