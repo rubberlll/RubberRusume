@@ -93,8 +93,3 @@ npm run preview
 
 本项目采灵感来源 开源项目:https://github.com/hua1995116/react-resume-site , 感谢大佬
 
----
-
-# 联系方式
-
-如果你有任何问题或建议，请随时通过 [GitHub Issues](https://github.com/rubberlll/RubberRusume/issues) 或者qq:3048318664@qq.com与我联系。
